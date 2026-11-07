@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="cs" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceDoc AI — Speak. It fills the document.</title>
+  <meta name="description" content="VoiceDoc AI is a desktop app for Windows and macOS that listens to your voice in Czech, English or Russian and fills documents, forms and tables automatically." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23fff'/%3E%3Cpath d='M8 13v6M12 9v14M16 6v20M20 11v10M24 14v4' stroke='%230a0a0a' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <script>
+    /* The Tailwind Play CDN logs a "should not be used in production" notice.
+       This hides only that one message; every other warning still shows.
+       For a fully clean production build, compile the CSS once with the Tailwind CLI. */
+    (function () {
+      var warn = console.warn;
+      console.warn = function () {
+        if (typeof arguments[0] === 'string' && arguments[0].indexOf('cdn.tailwindcss.com') !== -1) return;
+        warn.apply(console, arguments);
+      };
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            ink: '#0a0a0a',
+            line: '#262626',
+            panel: '#111111',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #0a0a0a; color: #fff; -webkit-font-smoothing: antialiased; }
+    ::selection { background: #fff; color: #0a0a0a; }
+
+    .grid-bg {
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 56px 56px;
+      -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 75%);
+              mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 75%);
+    }
+    .glow { background: radial-gradient(circle at center, rgba(255,255,255,0.10), transparent 65%); }
+    .text-fade {
+      background: linear-gradient(180deg, #fff 30%, #737373 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+
+    /* Language switcher */
+    .lang-btn {
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: #737373;
+      transition: color .2s ease, background .2s ease;
+    }
+    .lang-btn:hover { color: #fff; }
+    .lang-btn[aria-pressed="true"] { background: #fff; color: #0a0a0a; }
+    .lang-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+    /* Waveform */
+    .bar { width: 3px; border-radius: 2px; background: #fff; animation: wave 1.2s ease-in-out infinite; transform-origin: center; }
+    @keyframes wave { 0%,100% { transform: scaleY(0.2); opacity: .4; } 50% { transform: scaleY(1); opacity: 1; } }
+
+    /* Mockup field fill animation (loop 9s) */
+    .fill { position: relative; overflow: hidden; white-space: nowrap; }
+    .fill > span { display: inline-block; clip-path: inset(0 100% 0 0); animation: reveal 9s steps(1, end) infinite; }
+    .fill.f1 > span { animation-name: reveal1; }
+    .fill.f2 > span { animation-name: reveal2; }
+    .fill.f3 > span { animation-name: reveal3; }
+    .fill.f4 > span { animation-name: reveal4; }
+    @keyframes reveal1 { 0%,12% { clip-path: inset(0 100% 0 0); } 14% { clip-path: inset(0 0 0 0); } 92% { clip-path: inset(0 0 0 0); } 96%,100% { clip-path: inset(0 100% 0 0); } }
+    @keyframes reveal2 { 0%,28% { clip-path: inset(0 100% 0 0); } 30% { clip-path: inset(0 0 0 0); } 92% { clip-path: inset(0 0 0 0); } 96%,100% { clip-path: inset(0 100% 0 0); } }
+    @keyframes reveal3 { 0%,44% { clip-path: inset(0 100% 0 0); } 46% { clip-path: inset(0 0 0 0); } 92% { clip-path: inset(0 0 0 0); } 96%,100% { clip-path: inset(0 100% 0 0); } }
+    @keyframes reveal4 { 0%,60% { clip-path: inset(0 100% 0 0); } 62% { clip-path: inset(0 0 0 0); } 92% { clip-path: inset(0 0 0 0); } 96%,100% { clip-path: inset(0 100% 0 0); } }
+
+    .caret::after { content: ''; display: inline-block; width: 7px; height: 1em; background: #fff; margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    .card { transition: border-color .25s ease, background .25s ease, transform .25s ease; }
+    .card:hover { border-color: #525252; background: #111; transform: translateY(-3px); }
+
+    /* Smooth text swap when language changes */
+    body.lang-swap [data-i18n], body.lang-swap [data-i18n-html] { opacity: 0; }
+    [data-i18n], [data-i18n-html] { transition: opacity .15s ease; }
+
+    /* Modals */
+    .modal-root { position: fixed; inset: 0; z-index: 70; display: none; }
+    .modal-root.open { display: block; }
+    .modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); opacity: 0; transition: opacity .25s ease; }
+    .modal-wrap { position: absolute; inset: 0; overflow-y: auto; display: flex; padding: 1rem; }
+    .modal-panel {
+      display: none; position: relative; margin: auto; width: 100%; max-width: 28rem;
+      background: #111; border: 1px solid #262626; border-radius: 1rem; padding: 1.75rem;
+      box-shadow: 0 30px 80px -20px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.03);
+      opacity: 0; transform: translateY(14px) scale(.98); transition: opacity .25s ease, transform .25s ease;
+    }
+    .modal-panel:focus { outline: none; }
+    .modal-panel.wide { max-width: 32rem; }
+    .modal-panel.active { display: block; }
+    .modal-root.show .modal-overlay { opacity: 1; }
+    .modal-root.show .modal-panel { opacity: 1; transform: none; }
+    .modal-x { position: absolute; top: 1rem; right: 1rem; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: .5rem; color: #737373; transition: color .2s ease, background .2s ease; }
+    .modal-x:hover { color: #fff; background: #1c1c1c; }
+    .modal-x:focus-visible, .field:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    .field { width: 100%; background: #0a0a0a; border: 1px solid #262626; border-radius: .65rem; padding: .7rem .9rem; font-size: .875rem; color: #fff; transition: border-color .2s ease; }
+    .field::placeholder { color: #525252; }
+    .field:focus { outline: none; border-color: #fff; }
+    .field:focus-visible { outline: none; }
+    .dl-bar { height: 100%; width: 0; border-radius: 9999px; background: #fff; transition: width .12s linear; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+      .fill > span { clip-path: none !important; }
+    }
+  </style>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- ============ HEADER ============ -->
+  <header class="fixed inset-x-0 top-0 z-50 border-b border-line/80 bg-ink/80 backdrop-blur-xl">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-6">
+      <a href="#" class="flex items-center gap-2.5" aria-label="VoiceDoc AI">
+        <span class="grid h-8 w-8 place-items-center rounded-lg bg-white text-ink">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 6v12M12 3v18M16 8v8M20 11v2"/></svg>
+        </span>
+        <span class="text-[15px] font-semibold tracking-tight">VoiceDoc <span class="text-neutral-500">AI</span></span>
+      </a>
+
+      <nav class="hidden items-center gap-8 text-sm text-neutral-400 md:flex" aria-label="Main">
+        <a href="#features" class="transition hover:text-white" data-i18n="nav.features">Features</a>
+        <a href="#how" class="transition hover:text-white" data-i18n="nav.how">How it works</a>
+        <a href="#pricing" class="transition hover:text-white" data-i18n="nav.pricing">Pricing</a>
+        <a href="#download" class="transition hover:text-white" data-i18n="nav.download">Download</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <!-- Language switcher -->
+        <div id="lang-switch" role="group" aria-label="Language" data-i18n-aria="lang.label"
+             class="flex items-center rounded-lg border border-line p-0.5">
+          <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+          <button type="button" class="lang-btn" data-lang="cs" aria-pressed="true">CZ</button>
+          <button type="button" class="lang-btn" data-lang="ru" aria-pressed="false">RU</button>
+        </div>
+
+        <a href="#download" class="hidden rounded-lg bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-neutral-200 sm:inline-flex" data-i18n="nav.download">Download</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="relative overflow-hidden pt-36 pb-24 md:pt-44">
+      <div class="grid-bg pointer-events-none absolute inset-0"></div>
+      <div class="glow pointer-events-none absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2"></div>
+
+      <div class="relative mx-auto max-w-6xl px-6 text-center">
+        <div class="reveal mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-line bg-panel px-4 py-1.5 text-xs text-neutral-400">
+          <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
+          <span data-i18n="hero.badge">Czech · English · Russian — one app</span>
+        </div>
+
+        <h1 class="reveal mx-auto max-w-4xl text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
+          <span class="text-fade" data-i18n="hero.t1">Speak.</span><br class="hidden sm:block" />
+          <span class="text-fade" data-i18n="hero.t2">The document fills itself.</span>
+        </h1>
+
+        <p class="reveal mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-neutral-400" data-i18n="hero.sub">
+          VoiceDoc AI listens to your natural speech, understands what matters and places
+          structured data straight into your documents, forms and tables.
+          Stop typing. Start talking.
+        </p>
+
+        <div class="reveal mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <a href="#download" data-download data-platform="win"
+             class="group inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-white px-7 py-3.5 text-[15px] font-semibold text-ink transition hover:bg-neutral-200 sm:w-auto">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3zM11.5 4.25 21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg>
+            <span data-i18n="dl.win">Download for Windows</span>
+          </a>
+          <a href="#download" data-download data-platform="mac"
+             class="group inline-flex w-full items-center justify-center gap-2.5 rounded-xl border border-white px-7 py-3.5 text-[15px] font-semibold text-white transition hover:bg-white hover:text-ink sm:w-auto">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+            <span data-i18n="dl.mac">Download for macOS</span>
+          </a>
+          <a href="#how"
+             class="inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-[15px] font-medium text-neutral-400 transition hover:text-white sm:w-auto">
+            <span data-i18n="hero.cta2">Learn more</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <p class="reveal mt-4 text-xs text-neutral-600" data-i18n="hero.note">Windows 10/11 &amp; macOS · Free tier available · No credit card</p>
+
+        <!-- ===== App mockup placeholder ===== -->
+        <div class="reveal relative mx-auto mt-20 max-w-5xl">
+          <div class="pointer-events-none absolute -inset-x-10 -bottom-10 top-10 rounded-[40px] bg-white/[0.04] blur-3xl"></div>
+
+          <div class="relative overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl shadow-black">
+            <!-- window bar -->
+            <div class="flex items-center justify-between border-b border-line px-4 py-3">
+              <div class="flex gap-1.5">
+                <span class="h-3 w-3 rounded-full border border-neutral-700"></span>
+                <span class="h-3 w-3 rounded-full border border-neutral-700"></span>
+                <span class="h-3 w-3 rounded-full border border-neutral-700"></span>
+              </div>
+              <span class="font-mono text-xs text-neutral-500">VoiceDoc AI — Invoice_Draft.docx</span>
+              <span class="font-mono text-xs text-neutral-600">Ctrl + Shift + Space</span>
+            </div>
+
+            <div class="grid md:grid-cols-5">
+              <!-- left: voice -->
+              <div class="border-b border-line p-6 text-left md:col-span-2 md:border-b-0 md:border-r">
+                <div class="mb-5 flex items-center gap-2 text-xs uppercase tracking-widest text-neutral-500">
+                  <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-60"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span></span>
+                  <span data-i18n="mock.listening">Listening · EN</span>
+                </div>
+
+                <div class="flex h-16 items-center gap-[3px]" aria-hidden="true">
+                  <script>
+                    for (let i = 0; i < 38; i++) {
+                      const d = (Math.sin(i * 1.3) * .5 + .5) * 1.1;
+                      document.write(`<span class="bar" style="height:${24 + (i % 7) * 6}px;animation-delay:${d.toFixed(2)}s"></span>`);
+                    }
+                  </script>
+                </div>
+
+                <p class="caret mt-6 font-mono text-[13px] leading-relaxed text-neutral-300" data-i18n="mock.transcript">
+                  “Invoice for Novák Ltd., company ID 12345678, amount twelve thousand five hundred crowns, due by the end of the month…”
+                </p>
+              </div>
+
+              <!-- right: structured fields -->
+              <div class="p-6 text-left md:col-span-3">
+                <div class="mb-5 text-xs uppercase tracking-widest text-neutral-500" data-i18n="mock.extracted">Extracted fields</div>
+                <div class="space-y-3 font-mono text-sm">
+                  <div class="flex items-center justify-between gap-4 rounded-lg border border-line bg-ink px-4 py-3">
+                    <span class="text-neutral-500" data-i18n="mock.client">Client</span>
+                    <span class="fill f1 text-white"><span>Novák s.r.o.</span></span>
+                  </div>
+                  <div class="flex items-center justify-between gap-4 rounded-lg border border-line bg-ink px-4 py-3">
+                    <span class="text-neutral-500" data-i18n="mock.id">Company ID</span>
+                    <span class="fill f2 text-white"><span>12345678</span></span>
+                  </div>
+                  <div class="flex items-center justify-between gap-4 rounded-lg border border-line bg-ink px-4 py-3">
+                    <span class="text-neutral-500" data-i18n="mock.amount">Amount</span>
+                    <span class="fill f3 text-white"><span>12 500 CZK</span></span>
+                  </div>
+                  <div class="flex items-center justify-between gap-4 rounded-lg border border-line bg-ink px-4 py-3">
+                    <span class="text-neutral-500" data-i18n="mock.due">Due date</span>
+                    <span class="fill f4 text-white"><span>30. 11. 2026</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Replace the block above with a real screenshot: <img src="screenshot.png" class="rounded-2xl border border-line" alt="VoiceDoc AI interface"> -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STATS ============ -->
+    <section class="border-y border-line">
+      <div class="mx-auto grid max-w-6xl grid-cols-2 gap-px bg-line md:grid-cols-4">
+        <div class="bg-ink px-6 py-10 text-center"><div class="text-3xl font-bold tracking-tight">3</div><div class="mt-1 text-sm text-neutral-500" data-i18n="stats.langs">Languages</div></div>
+        <div class="bg-ink px-6 py-10 text-center"><div class="text-3xl font-bold tracking-tight">~10×</div><div class="mt-1 text-sm text-neutral-500" data-i18n="stats.faster">Faster than typing</div></div>
+        <div class="bg-ink px-6 py-10 text-center"><div class="text-3xl font-bold tracking-tight" data-i18n="stats.keyval">1 key</div><div class="mt-1 text-sm text-neutral-500" data-i18n="stats.hotkey">Global hotkey</div></div>
+        <div class="bg-ink px-6 py-10 text-center"><div class="text-3xl font-bold tracking-tight">$0</div><div class="mt-1 text-sm text-neutral-500" data-i18n="stats.start">To get started</div></div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURES ============ -->
+    <section id="features" class="mx-auto max-w-6xl px-6 py-28">
+      <div class="reveal mx-auto max-w-2xl text-center">
+        <p class="text-xs font-medium uppercase tracking-[0.2em] text-neutral-500" data-i18n="feat.label">Features</p>
+        <h2 class="mt-4 text-4xl font-bold tracking-tight md:text-5xl" data-i18n="feat.title">Built for people who talk faster than they type.</h2>
+        <p class="mt-5 text-neutral-400" data-i18n="feat.sub">Three ideas, one frictionless workflow.</p>
+      </div>
+
+      <div class="mt-16 grid gap-5 md:grid-cols-3">
+        <!-- 1 -->
+        <article class="reveal card rounded-2xl border border-line bg-ink p-8">
+          <div class="mb-6 grid h-12 w-12 place-items-center rounded-xl border border-line bg-panel">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          </div>
+          <h3 class="text-xl font-semibold tracking-tight" data-i18n="f1.title">Speech to structured data</h3>
+          <p class="mt-3 leading-relaxed text-neutral-400" data-i18n="f1.desc">
+            Whisper transcribes every word. A language model then understands the meaning,
+            pulls out names, numbers, dates and addresses, and shapes them into clean fields.
+          </p>
+          <ul class="mt-6 space-y-2 text-sm text-neutral-500">
+            <li class="flex gap-2"><span class="text-white">—</span><span data-i18n="f1.l1">Whisper-grade transcription</span></li>
+            <li class="flex gap-2"><span class="text-white">—</span><span data-i18n="f1.l2">LLM entity extraction</span></li>
+            <li class="flex gap-2"><span class="text-white">—</span><span data-i18n="f1.l3">Output as fields, rows or text</span></li>
+          </ul>
+        </article>
+
+        <!-- 2 -->
+        <article class="reveal card rounded-2xl border border-line bg-ink p-8">
+          <div class="mb-6 grid h-12 w-12 place-items-center rounded-xl border border-line bg-panel">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg>
+          </div>
+          <h3 class="text-xl font-semibold tracking-tight" data-i18n="f2.title">Global hotkey &amp; integration</h3>
+          <p class="mt-3 leading-relaxed text-neutral-400" data-i18n="f2.desc">
+            Press one shortcut anywhere in Windows or macOS, speak, and release. The result lands
+            exactly where your cursor is — Word, Excel, a browser form or any desktop app.
+          </p>
+          <ul class="mt-6 space-y-2 text-sm text-neutral-500">
+            <li class="flex gap-2"><span class="text-white">—</span><span data-i18n="f2.l1">Works system-wide</span></li>
+            <li class="flex gap-2"><span class="text-white">—</span><span data-i18n="f2.l2">Fills fields, tables and documents</span></li>
+            <li class="flex gap-2"><span class="text-white">—</span><span data-i18n="f2.l3">Fully customizable shortcut</span></li>
+          </ul>
+        </article>
+
+        <!-- 3 -->
+        <article class="reveal card rounded-2xl border border-line bg-ink p-8">
+          <div class="mb-6 grid h-12 w-12 place-items-center rounded-xl border border-line bg-panel">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>
+          </div>
+          <h3 class="text-xl font-semibold tracking-tight" data-i18n="f3.title">Multilingual by default</h3>
+          <p class="mt-3 leading-relaxed text-neutral-400" data-i18n="f3.desc">
+            Switch between Czech, English and Russian mid-day — or mid-sentence.
+            Language is detected automatically, so you never touch a setting.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="rounded-full border border-line px-3 py-1 text-xs text-neutral-300">Čeština</span>
+            <span class="rounded-full border border-line px-3 py-1 text-xs text-neutral-300">English</span>
+            <span class="rounded-full border border-line px-3 py-1 text-xs text-neutral-300">Русский</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section id="how" class="border-y border-line bg-panel/40">
+      <div class="mx-auto max-w-6xl px-6 py-28">
+        <div class="reveal max-w-2xl">
+          <p class="text-xs font-medium uppercase tracking-[0.2em] text-neutral-500" data-i18n="how.label">How it works</p>
+          <h2 class="mt-4 text-4xl font-bold tracking-tight md:text-5xl" data-i18n="how.title">Three seconds from thought to text.</h2>
+        </div>
+
+        <div class="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-3">
+          <div class="reveal bg-ink p-8">
+            <div class="font-mono text-sm text-neutral-600">01</div>
+            <h3 class="mt-6 text-lg font-semibold" data-i18n="s1.title">Press &amp; speak</h3>
+            <p class="mt-2 text-sm leading-relaxed text-neutral-400" data-i18n="s1.desc">Hold your hotkey and say it the way you’d tell a colleague. No commands, no templates to memorize.</p>
+          </div>
+          <div class="reveal bg-ink p-8">
+            <div class="font-mono text-sm text-neutral-600">02</div>
+            <h3 class="mt-6 text-lg font-semibold" data-i18n="s2.title">AI structures it</h3>
+            <p class="mt-2 text-sm leading-relaxed text-neutral-400" data-i18n="s2.desc">Speech is transcribed, then analyzed. Key data is identified and mapped to the right fields.</p>
+          </div>
+          <div class="reveal bg-ink p-8">
+            <div class="font-mono text-sm text-neutral-600">03</div>
+            <h3 class="mt-6 text-lg font-semibold" data-i18n="s3.title">Done in place</h3>
+            <p class="mt-2 text-sm leading-relaxed text-neutral-400" data-i18n="s3.desc">Release the key — the data is typed into your document, form or table. Review, adjust, move on.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRICING ============ -->
+    <section id="pricing" class="mx-auto max-w-6xl px-6 py-28">
+      <div class="reveal mx-auto max-w-2xl text-center">
+        <p class="text-xs font-medium uppercase tracking-[0.2em] text-neutral-500" data-i18n="price.label">Pricing</p>
+        <h2 class="mt-4 text-4xl font-bold tracking-tight md:text-5xl" data-i18n="price.title">Simple. Fair. Two plans.</h2>
+        <p class="mt-5 text-neutral-400" data-i18n="price.sub">Start free. Upgrade when voice becomes your main keyboard.</p>
+      </div>
+
+      <div class="mx-auto mt-16 grid max-w-4xl gap-6 md:grid-cols-2">
+        <!-- Free -->
+        <div class="reveal card flex flex-col rounded-2xl border border-line bg-ink p-8">
+          <h3 class="text-lg font-semibold" data-i18n="free.name">Free</h3>
+          <p class="mt-1 text-sm text-neutral-500" data-i18n="free.desc">For trying it out and light use.</p>
+          <div class="mt-8 flex items-baseline gap-2">
+            <span class="text-5xl font-bold tracking-tight">$0</span>
+            <span class="text-neutral-500" data-i18n="free.per">/ forever</span>
+          </div>
+          <ul class="mt-8 flex-1 space-y-3.5 text-sm text-neutral-300">
+            <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f1">Basic voice-to-field extraction</span></li>
+            <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f2">Limited minutes per month</span></li>
+            <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f3">Czech, English &amp; Russian</span></li>
+            <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f4">Standard support</span></li>
+          </ul>
+          <a href="#download" class="mt-10 block rounded-xl border border-line py-3 text-center text-sm font-semibold transition hover:border-neutral-500 hover:bg-panel" data-i18n="free.cta">Get started free</a>
+        </div>
+
+        <!-- Pro -->
+        <div class="reveal relative flex flex-col rounded-2xl border border-white bg-panel p-8 shadow-[0_0_80px_-20px_rgba(255,255,255,0.25)]">
+          <span class="absolute -top-3 left-8 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-ink" data-i18n="pro.badge">Best for Professionals</span>
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="text-lg font-semibold">Pro</h3>
+            <span class="rounded-full border border-white px-2.5 py-1 text-[11px] font-semibold tracking-wide" data-i18n="pro.discount">−25% first month</span>
+          </div>
+          <p class="mt-1 text-sm text-neutral-500" data-i18n="pro.desc">For daily, unlimited voice work.</p>
+          <div class="mt-8">
+            <div class="flex items-baseline gap-3">
+              <span class="text-5xl font-bold tracking-tight">$6.74</span>
+              <span class="text-xl text-neutral-600 line-through">$8.99</span>
+            </div>
+            <p class="mt-2 text-sm text-neutral-400" data-i18n="pro.first">first month · then $8.99 / month</p>
+          </div>
+          <ul class="mt-8 flex-1 space-y-3.5 text-sm text-neutral-200">
+            <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f1">Unlimited voice transcription</span></li>
+            <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f2">Advanced AI customization &amp; custom templates</span></li>
+            <li class="flex gap-3 text-white"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f6">Voice coding — dictate code straight into VS Code and other IDEs</span></li>
+            <li class="flex gap-3 text-white"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f7">Voice-powered math &amp; logic problem solving</span></li>
+            <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f3">Priority processing speed</span></li>
+            <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f4">Everything in Free</span></li>
+            <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f5">Priority support</span></li>
+          </ul>
+          <a href="#download" class="mt-10 block rounded-xl bg-white py-3 text-center text-sm font-semibold text-ink transition hover:bg-neutral-200" data-i18n="pro.cta">Go Pro</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DOWNLOAD CTA ============ -->
+    <section id="download" class="px-6 pb-28">
+      <div class="reveal relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-line bg-panel px-6 py-20 text-center md:py-28">
+        <div class="grid-bg pointer-events-none absolute inset-0 opacity-70"></div>
+        <div class="glow pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2"></div>
+
+        <div class="relative">
+          <h2 class="mx-auto max-w-3xl text-4xl font-extrabold tracking-tight md:text-6xl">
+            <span class="text-fade" data-i18n-html="dl.title">Put your keyboard<br />on a break.</span>
+          </h2>
+          <p class="mx-auto mt-6 max-w-xl text-neutral-400" data-i18n="dl.sub">
+            Download VoiceDoc AI for Windows or macOS and fill your first document with your voice in under a minute.
+          </p>
+
+          <div class="mt-10 flex flex-col items-center gap-4">
+            <div class="flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
+              <a href="#download" data-download data-platform="win"
+                 class="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-white px-9 py-4 text-base font-semibold text-ink transition hover:scale-[1.03] hover:bg-neutral-200 sm:w-auto">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3zM11.5 4.25 21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg>
+                <span data-i18n="dl.win">Download for Windows</span>
+              </a>
+              <a href="#download" data-download data-platform="mac"
+                 class="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-white px-9 py-4 text-base font-semibold text-white transition hover:scale-[1.03] hover:bg-white hover:text-ink sm:w-auto">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+                <span data-i18n="dl.mac">Download for macOS</span>
+              </a>
+            </div>
+            <p class="font-mono text-xs text-neutral-500" data-i18n="dl.meta">v0.1.0 · Windows 10/11 &amp; macOS · ~85 MB</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="border-t border-line">
+    <div class="mx-auto max-w-6xl px-6 py-12">
+      <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+        <a href="#" class="flex items-center gap-2.5" aria-label="VoiceDoc AI">
+          <span class="grid h-7 w-7 place-items-center rounded-md bg-white text-ink">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 10v4M8 6v12M12 3v18M16 8v8M20 11v2"/></svg>
+          </span>
+          <span class="text-sm font-semibold">VoiceDoc <span class="text-neutral-500">AI</span></span>
+        </a>
+        <nav class="flex flex-wrap gap-x-8 gap-y-3 text-sm text-neutral-500" aria-label="Footer">
+          <a href="#features" class="transition hover:text-white" data-i18n="nav.features">Features</a>
+          <a href="#pricing" class="transition hover:text-white" data-i18n="nav.pricing">Pricing</a>
+          <a href="#download" class="transition hover:text-white" data-i18n="nav.download">Download</a>
+          <button type="button" class="transition hover:text-white" data-open-modal="privacy" data-i18n="foot.privacy">Privacy</button>
+          <button type="button" class="transition hover:text-white" data-open-modal="contact" data-i18n="foot.contact">Contact</button>
+        </nav>
+      </div>
+
+      <div class="mt-10 border-t border-line pt-8 text-xs leading-relaxed text-neutral-600">
+        <p data-i18n="foot.rights">© 2026 VoiceDoc AI. All rights reserved.</p>
+        <p class="mt-2 max-w-2xl" data-i18n="foot.disclaimer">VoiceDoc AI is an independent pre-release project (v0.1 beta). Features, pricing and availability are subject to change and may differ in the final release.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ MODALS ============ -->
+  <div id="modal-root" class="modal-root">
+    <div class="modal-overlay" data-close-modal></div>
+    <div class="modal-wrap">
+
+      <!-- Download -->
+      <section id="modal-download" class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="dl-title-a" tabindex="-1">
+        <button type="button" class="modal-x" data-close-modal aria-label="Close" data-i18n-aria="modal.close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+
+        <div class="mb-6 flex items-center gap-3 pr-8">
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line bg-ink">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></svg>
+          </span>
+          <div class="min-w-0">
+            <p id="dl-file" class="truncate font-mono text-xs text-neutral-300"></p>
+            <p id="dl-meta" class="truncate font-mono text-xs text-neutral-600"></p>
+          </div>
+        </div>
+
+        <div id="dl-stage-progress">
+          <h2 id="dl-title-a" class="text-xl font-semibold tracking-tight" data-i18n="dl.m.preparing">VoiceDoc AI v0.1 installer is preparing…</h2>
+          <div class="mt-6 h-1.5 w-full overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="dl-track">
+            <div id="dl-bar" class="dl-bar"></div>
+          </div>
+          <div class="mt-3 flex items-center justify-between font-mono text-xs text-neutral-500">
+            <span id="dl-step"></span><span id="dl-pct">0%</span>
+          </div>
+        </div>
+
+        <div id="dl-stage-beta" hidden>
+          <h2 class="text-xl font-semibold tracking-tight" data-i18n="dl.m.beta.title">Beta access opens soon</h2>
+          <p class="mt-2 text-sm leading-relaxed text-neutral-400" data-i18n="dl.m.beta.text">The installer isn’t public yet. Leave your email and we’ll let you know when the beta opens.</p>
+          <form id="beta-form" novalidate class="mt-5 space-y-3">
+            <label for="beta-email" class="sr-only" data-i18n="dl.m.email">Email address</label>
+            <input id="beta-email" type="email" autocomplete="email" class="field" placeholder="you@example.com" data-i18n-placeholder="dl.m.placeholder" />
+            <p id="beta-error" class="text-xs text-neutral-300" role="alert" hidden></p>
+            <button type="submit" class="w-full rounded-xl bg-white py-3 text-sm font-semibold text-ink transition hover:bg-neutral-200 disabled:opacity-60" data-i18n="dl.m.submit">Join the beta waitlist</button>
+          </form>
+          <p class="mt-3 text-center text-xs text-neutral-600" data-i18n="dl.m.fine">No spam — one email when the beta opens.</p>
+        </div>
+
+        <div id="dl-stage-done" hidden class="text-center">
+          <span class="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full border border-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <h2 class="text-xl font-semibold tracking-tight" data-i18n="dl.m.done.title">Thank you!</h2>
+          <p class="mt-2 text-sm leading-relaxed text-neutral-400" data-i18n="dl.m.done.text">Your email has been added to the beta waitlist.</p>
+          <button id="dl-done-btn" type="button" data-close-modal class="mt-6 w-full rounded-xl border border-line py-3 text-sm font-semibold transition hover:border-neutral-500 hover:bg-ink" data-i18n="modal.done">Done</button>
+        </div>
+      </section>
+
+      <!-- Privacy -->
+      <section id="modal-privacy" class="modal-panel wide" role="dialog" aria-modal="true" aria-labelledby="priv-title" tabindex="-1">
+        <button type="button" class="modal-x" data-close-modal aria-label="Close" data-i18n-aria="modal.close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <p class="font-mono text-xs text-neutral-600" data-i18n="priv.updated">Last updated: November 2026</p>
+        <h2 id="priv-title" class="mt-2 text-2xl font-bold tracking-tight" data-i18n="priv.title">Privacy</h2>
+        <p class="mt-3 text-sm leading-relaxed text-neutral-400" data-i18n="priv.lead">VoiceDoc AI respects your privacy. Here’s how your voice and data are handled.</p>
+        <ul class="mt-6 space-y-5">
+        <li class="flex gap-4">
+          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-line bg-ink">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </span>
+          <div>
+            <h3 class="text-sm font-semibold" data-i18n="priv.1.t"></h3>
+            <p class="mt-1 text-sm leading-relaxed text-neutral-400" data-i18n="priv.1.d"></p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-line bg-ink">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+          </span>
+          <div>
+            <h3 class="text-sm font-semibold" data-i18n="priv.2.t"></h3>
+            <p class="mt-1 text-sm leading-relaxed text-neutral-400" data-i18n="priv.2.d"></p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-line bg-ink">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4 9.5 6a14 14 0 0 1-2.6 3.4M6.5 7.6A13.6 13.6 0 0 0 2.5 12c1 2 4.5 6 9.5 6 1.5 0 2.8-.4 4-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+          </span>
+          <div>
+            <h3 class="text-sm font-semibold" data-i18n="priv.3.t"></h3>
+            <p class="mt-1 text-sm leading-relaxed text-neutral-400" data-i18n="priv.3.d"></p>
+          </div>
+        </li>
+        </ul>
+        <div class="mt-7 border-t border-line pt-5 text-xs leading-relaxed text-neutral-500">
+          <p data-i18n="priv.note">This is a short summary for the v0.1 beta; a full policy will be published before public release.</p>
+          <p class="mt-2"><span data-i18n="priv.q">Questions about privacy?</span> <button type="button" class="font-semibold text-white underline underline-offset-4 hover:text-neutral-300" data-open-modal="contact" data-i18n="priv.link">Contact us</button></p>
+        </div>
+      </section>
+
+      <!-- Contact -->
+      <section id="modal-contact" class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="ct-title" tabindex="-1">
+        <button type="button" class="modal-x" data-close-modal aria-label="Close" data-i18n-aria="modal.close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <h2 id="ct-title" class="text-2xl font-bold tracking-tight" data-i18n="contact.title">Contact</h2>
+
+        <div id="ct-stage-form">
+          <p class="mt-3 text-sm leading-relaxed text-neutral-400" data-i18n="contact.text">Questions, bug reports or feedback on the beta? Write to us — we read every message.</p>
+          <a href="mailto:support@voicedoc.ai" class="mt-5 flex items-center justify-between gap-3 rounded-xl border border-line bg-ink px-4 py-3 transition hover:border-neutral-500">
+            <span class="text-xs text-neutral-500" data-i18n="contact.email">Support email</span>
+            <span class="font-mono text-sm">support@voicedoc.ai</span>
+          </a>
+          <form id="contact-form" novalidate class="mt-4 space-y-3">
+            <div>
+              <label for="ct-name" class="mb-1.5 block text-xs text-neutral-500" data-i18n="contact.name">Name</label>
+              <input id="ct-name" type="text" autocomplete="name" class="field" placeholder="Your name" data-i18n-placeholder="contact.name.ph" />
+            </div>
+            <div>
+              <label for="ct-email" class="mb-1.5 block text-xs text-neutral-500" data-i18n="contact.mail">Your email</label>
+              <input id="ct-email" type="email" autocomplete="email" class="field" placeholder="you@example.com" data-i18n-placeholder="dl.m.placeholder" />
+            </div>
+            <div>
+              <label for="ct-msg" class="mb-1.5 block text-xs text-neutral-500" data-i18n="contact.msg">Message</label>
+              <textarea id="ct-msg" rows="4" class="field resize-none" placeholder="How can we help?" data-i18n-placeholder="contact.msg.ph"></textarea>
+            </div>
+            <p id="ct-error" class="text-xs text-neutral-300" role="alert" hidden></p>
+            <button type="submit" class="w-full rounded-xl bg-white py-3 text-sm font-semibold text-ink transition hover:bg-neutral-200" data-i18n="contact.send">Send message</button>
+          </form>
+        </div>
+
+        <div id="ct-stage-done" hidden class="text-center">
+          <span class="mx-auto mb-4 mt-4 grid h-12 w-12 place-items-center rounded-full border border-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <h3 class="text-lg font-semibold tracking-tight" data-i18n="contact.done.title">Thank you!</h3>
+          <p class="mt-2 text-sm leading-relaxed text-neutral-400" data-i18n="contact.done.text">Your message has been sent successfully.</p>
+          <button id="ct-done-btn" type="button" data-close-modal class="mt-6 w-full rounded-xl border border-line py-3 text-sm font-semibold transition hover:border-neutral-500 hover:bg-ink" data-i18n="modal.done">Done</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================
+       I18N — edit the dictionary below to change any text.
+       Add data-i18n="key" to a tag to translate its text,
+       data-i18n-html="key" if the text contains HTML (<br>),
+       data-i18n-aria="key" to translate its aria-label.
+       ===================================================== */
+    const I18N = {
+      en: {
+        'meta.title': 'VoiceDoc AI — Speak. It fills the document.',
+        'meta.desc': 'VoiceDoc AI is a desktop app for Windows and macOS that listens to your voice in Czech, English or Russian and fills documents, forms and tables automatically.',
+        'lang.label': 'Language',
+
+        'nav.features': 'Features',
+        'nav.how': 'How it works',
+        'nav.pricing': 'Pricing',
+        'nav.download': 'Download',
+
+        'hero.badge': 'Czech · English · Russian — one app',
+        'hero.t1': 'Speak.',
+        'hero.t2': 'The document fills itself.',
+        'hero.sub': 'VoiceDoc AI listens to your natural speech, understands what matters and places structured data straight into your documents, forms and tables. Stop typing. Start talking.',
+        'dl.win': 'Download for Windows',
+        'dl.mac': 'Download for macOS',
+        'dl.meta': 'v0.1.0 · Windows 10/11 & macOS · ~85 MB',
+        'hero.cta2': 'Learn more',
+        'hero.note': 'Windows 10/11 & macOS · Free tier available · No credit card',
+
+        'mock.listening': 'Listening · EN',
+        'mock.transcript': '“Invoice for Novák Ltd., company ID 12345678, amount twelve thousand five hundred crowns, due by the end of the month…”',
+        'mock.extracted': 'Extracted fields',
+        'mock.client': 'Client',
+        'mock.id': 'Company ID',
+        'mock.amount': 'Amount',
+        'mock.due': 'Due date',
+
+        'stats.langs': 'Languages',
+        'stats.faster': 'Faster than typing',
+        'stats.keyval': '1 key',
+        'stats.hotkey': 'Global hotkey',
+        'stats.start': 'To get started',
+
+        'feat.label': 'Features',
+        'feat.title': 'Built for people who talk faster than they type.',
+        'feat.sub': 'Three ideas, one frictionless workflow.',
+        'f1.title': 'Speech to structured data',
+        'f1.desc': 'Whisper transcribes every word. A language model then understands the meaning, pulls out names, numbers, dates and addresses, and shapes them into clean fields.',
+        'f1.l1': 'Whisper-grade transcription',
+        'f1.l2': 'LLM entity extraction',
+        'f1.l3': 'Output as fields, rows or text',
+        'f2.title': 'Global hotkey & integration',
+        'f2.desc': 'Press one shortcut anywhere in Windows or macOS, speak, and release. The result lands exactly where your cursor is — Word, Excel, a browser form or any desktop app.',
+        'f2.l1': 'Works system-wide',
+        'f2.l2': 'Fills fields, tables and documents',
+        'f2.l3': 'Fully customizable shortcut',
+        'f3.title': 'Multilingual by default',
+        'f3.desc': 'Switch between Czech, English and Russian mid-day — or mid-sentence. Language is detected automatically, so you never touch a setting.',
+
+        'how.label': 'How it works',
+        'how.title': 'Three seconds from thought to text.',
+        's1.title': 'Press & speak',
+        's1.desc': 'Hold your hotkey and say it the way you’d tell a colleague. No commands, no templates to memorize.',
+        's2.title': 'AI structures it',
+        's2.desc': 'Speech is transcribed, then analyzed. Key data is identified and mapped to the right fields.',
+        's3.title': 'Done in place',
+        's3.desc': 'Release the key — the data is typed into your document, form or table. Review, adjust, move on.',
+
+        'price.label': 'Pricing',
+        'price.title': 'Simple. Fair. Two plans.',
+        'price.sub': 'Start free. Upgrade when voice becomes your main keyboard.',
+        'free.name': 'Free',
+        'free.desc': 'For trying it out and light use.',
+        'free.per': '/ forever',
+        'free.f1': 'Basic voice-to-field extraction',
+        'free.f2': 'Limited minutes per month',
+        'free.f3': 'Czech, English & Russian',
+        'free.f4': 'Standard support',
+        'free.cta': 'Get started free',
+        'pro.badge': 'Best for Professionals',
+        'pro.desc': 'For daily, unlimited voice work.',
+        'pro.discount': '−25% first month',
+        'pro.first': 'first month · then $8.99 / month',
+        'pro.f6': 'Voice coding — dictate code straight into VS Code and other IDEs',
+        'pro.f7': 'Voice-powered math & logic problem solving',
+        'pro.f1': 'Unlimited voice transcription',
+        'pro.f2': 'Advanced AI customization & custom templates',
+        'pro.f3': 'Priority processing speed',
+        'pro.f4': 'Everything in Free',
+        'pro.f5': 'Priority support',
+        'pro.cta': 'Go Pro',
+
+        'dl.title': 'Put your keyboard<br />on a break.',
+        'dl.sub': 'Download VoiceDoc AI for Windows or macOS and fill your first document with your voice in under a minute.',
+
+        'foot.privacy': 'Privacy',
+        'foot.contact': 'Contact',
+        'foot.rights': '© {year} VoiceDoc AI. All rights reserved.',
+        'foot.disclaimer': 'VoiceDoc AI is an independent pre-release project (v0.1 beta). Features, pricing and availability are subject to change and may differ in the final release.',
+
+        'modal.close': 'Close',
+        'modal.done': 'Done',
+        'dl.m.preparing': 'VoiceDoc AI v0.1 installer is preparing…',
+        'dl.m.s1': 'Preparing installer…',
+        'dl.m.s2': 'Verifying package…',
+        'dl.m.s3': 'Almost ready…',
+        'dl.m.beta.title': 'Beta access opens soon',
+        'dl.m.beta.text': 'The installer isn’t public yet. Leave your email and we’ll let you know when the beta opens.',
+        'dl.m.email': 'Email address',
+        'dl.m.placeholder': 'you@example.com',
+        'dl.m.submit': 'Join the beta waitlist',
+        'dl.m.fine': 'No spam — one email when the beta opens.',
+        'dl.m.done.title': 'Thank you!',
+        'dl.m.done.text': 'Your email has been added to the beta waitlist.',
+        'form.invalid': 'Please enter a valid email address.',
+        'form.empty': 'Please write a message.',
+        'form.error': 'Something went wrong. Please try again.',
+        'priv.updated': 'Last updated: November 2026',
+        'priv.title': 'Privacy',
+        'priv.lead': 'VoiceDoc AI respects your privacy. Here’s how your voice and data are handled.',
+        'priv.1.t': 'Encrypted audio streams',
+        'priv.1.d': 'Your voice is sent over encrypted connections, so it can’t be intercepted on the way.',
+        'priv.2.t': 'Processed securely, never stored',
+        'priv.2.d': 'Audio and transcripts are used only to produce your result and are not stored after processing.',
+        'priv.3.t': 'Minimal by design',
+        'priv.3.d': 'We handle only what’s needed to fill your document. No ads, and we never sell your data.',
+        'priv.note': 'This is a short summary for the v0.1 beta; a full policy will be published before public release.',
+        'priv.q': 'Questions about privacy?',
+        'priv.link': 'Contact us',
+        'contact.title': 'Contact',
+        'contact.text': 'Questions, bug reports or feedback on the beta? Write to us — we read every message.',
+        'contact.email': 'Support email',
+        'contact.name': 'Name',
+        'contact.name.ph': 'Your name',
+        'contact.mail': 'Your email',
+        'contact.msg': 'Message',
+        'contact.msg.ph': 'How can we help?',
+        'contact.send': 'Send message',
+        'contact.done.title': 'Thank you!',
+        'contact.done.text': 'Your message has been sent successfully.'
+      },
+
+      cs: {
+        'meta.title': 'VoiceDoc AI — Mluvte. Dokument se vyplní sám.',
+        'meta.desc': 'VoiceDoc AI je desktopová aplikace pro Windows a macOS, která poslouchá váš hlas v češtině, angličtině nebo ruštině a automaticky vyplňuje dokumenty, formuláře a tabulky.',
+        'lang.label': 'Jazyk',
+
+        'nav.features': 'Funkce',
+        'nav.how': 'Jak to funguje',
+        'nav.pricing': 'Ceník',
+        'nav.download': 'Stáhnout',
+
+        'hero.badge': 'Čeština · Angličtina · Ruština — v jedné aplikaci',
+        'hero.t1': 'Mluvte.',
+        'hero.t2': 'Dokument se vyplní sám.',
+        'hero.sub': 'VoiceDoc AI poslouchá vaši přirozenou řeč, pochopí, na čem záleží, a vloží strukturovaná data přímo do vašich dokumentů, formulářů a tabulek. Přestaňte psát. Začněte mluvit.',
+        'dl.win': 'Stáhnout pro Windows',
+        'dl.mac': 'Stáhnout pro macOS',
+        'dl.meta': 'v0.1.0 · Windows 10/11 a macOS · ~85 MB',
+        'hero.cta2': 'Zjistit více',
+        'hero.note': 'Windows 10/11 a macOS · K dispozici zdarma · Bez platební karty',
+
+        'mock.listening': 'Poslouchám · CZ',
+        'mock.transcript': '„Faktura pro firmu Novák s.r.o., IČO 12345678, částka dvanáct tisíc pět set korun, splatnost do konce měsíce…“',
+        'mock.extracted': 'Extrahovaná pole',
+        'mock.client': 'Klient',
+        'mock.id': 'IČO',
+        'mock.amount': 'Částka',
+        'mock.due': 'Splatnost',
+
+        'stats.langs': 'Jazyky',
+        'stats.faster': 'Rychleji než psaní',
+        'stats.keyval': '1 klávesa',
+        'stats.hotkey': 'Globální zkratka',
+        'stats.start': 'Na začátek',
+
+        'feat.label': 'Funkce',
+        'feat.title': 'Pro ty, kdo mluví rychleji, než píší.',
+        'feat.sub': 'Tři myšlenky, jeden plynulý pracovní postup.',
+        'f1.title': 'Řeč na strukturovaná data',
+        'f1.desc': 'Whisper přepíše každé slovo. Jazykový model pak porozumí významu, vytáhne jména, čísla, data a adresy a uspořádá je do přehledných polí.',
+        'f1.l1': 'Přepis na úrovni Whisper',
+        'f1.l2': 'Extrakce údajů pomocí LLM',
+        'f1.l3': 'Výstup jako pole, řádky nebo text',
+        'f2.title': 'Globální zkratka a integrace',
+        'f2.desc': 'Stiskněte jednu zkratku kdekoli ve Windows nebo macOS, mluvte a pusťte ji. Výsledek se objeví přesně tam, kde máte kurzor — ve Wordu, Excelu, webovém formuláři i v jakékoli desktopové aplikaci.',
+        'f2.l1': 'Funguje v celém systému',
+        'f2.l2': 'Vyplňuje pole, tabulky i dokumenty',
+        'f2.l3': 'Plně přizpůsobitelná zkratka',
+        'f3.title': 'Vícejazyčné ze základu',
+        'f3.desc': 'Přepínejte mezi češtinou, angličtinou a ruštinou během dne — nebo i uprostřed věty. Jazyk se rozpozná automaticky, takže nemusíte nic nastavovat.',
+
+        'how.label': 'Jak to funguje',
+        'how.title': 'Tři vteřiny od myšlenky k textu.',
+        's1.title': 'Stiskněte a mluvte',
+        's1.desc': 'Podržte zkratku a řekněte to, jako byste to říkali kolegovi. Žádné příkazy ani šablony, které byste si museli pamatovat.',
+        's2.title': 'AI to uspořádá',
+        's2.desc': 'Řeč se přepíše a analyzuje. Klíčové údaje se rozpoznají a přiřadí ke správným polím.',
+        's3.title': 'Hotovo na místě',
+        's3.desc': 'Pusťte klávesu — data se vloží do dokumentu, formuláře nebo tabulky. Zkontrolujte, upravte a pokračujte.',
+
+        'price.label': 'Ceník',
+        'price.title': 'Jednoduše. Férově. Dva tarify.',
+        'price.sub': 'Začněte zdarma. Přejděte na vyšší tarif, až se hlas stane vaší hlavní klávesnicí.',
+        'free.name': 'Zdarma',
+        'free.desc': 'Na vyzkoušení a občasné použití.',
+        'free.per': '/ navždy',
+        'free.f1': 'Základní převod hlasu do polí',
+        'free.f2': 'Omezený počet minut měsíčně',
+        'free.f3': 'Čeština, angličtina a ruština',
+        'free.f4': 'Standardní podpora',
+        'free.cta': 'Začít zdarma',
+        'pro.badge': 'Nejlepší pro profesionály',
+        'pro.desc': 'Pro každodenní neomezenou práci s hlasem.',
+        'pro.discount': '−25 % první měsíc',
+        'pro.first': 'první měsíc · poté $8.99 / měsíc',
+        'pro.f6': 'Hlasové programování — diktujte kód přímo do VS Code a dalších IDE',
+        'pro.f7': 'Řešení matematických a logických úloh hlasem',
+        'pro.f1': 'Neomezený přepis hlasu',
+        'pro.f2': 'Pokročilé přizpůsobení AI a vlastní šablony',
+        'pro.f3': 'Prioritní rychlost zpracování',
+        'pro.f4': 'Vše z tarifu Zdarma',
+        'pro.f5': 'Prioritní podpora',
+        'pro.cta': 'Přejít na Pro',
+
+        'dl.title': 'Dopřejte své klávesnici<br />pauzu.',
+        'dl.sub': 'Stáhněte si VoiceDoc AI pro Windows nebo macOS a vyplňte svůj první dokument hlasem za méně než minutu.',
+
+        'foot.privacy': 'Soukromí',
+        'foot.contact': 'Kontakt',
+        'foot.rights': '© {year} VoiceDoc AI. Všechna práva vyhrazena.',
+        'foot.disclaimer': 'VoiceDoc AI je nezávislý projekt před oficiálním vydáním (beta v0.1). Funkce, ceny a dostupnost se mohou změnit a ve finální verzi se mohou lišit.',
+
+        'modal.close': 'Zavřít',
+        'modal.done': 'Hotovo',
+        'dl.m.preparing': 'Instalátor VoiceDoc AI v0.1 se připravuje…',
+        'dl.m.s1': 'Připravuji instalátor…',
+        'dl.m.s2': 'Ověřuji balíček…',
+        'dl.m.s3': 'Téměř hotovo…',
+        'dl.m.beta.title': 'Beta přístup se brzy otevře',
+        'dl.m.beta.text': 'Instalátor zatím není veřejný. Zanechte e-mail a dáme vám vědět, až se beta otevře.',
+        'dl.m.email': 'E-mailová adresa',
+        'dl.m.placeholder': 'vas@email.cz',
+        'dl.m.submit': 'Zapsat se na čekací listinu',
+        'dl.m.fine': 'Žádný spam — jediný e-mail, až se beta otevře.',
+        'dl.m.done.title': 'Děkujeme!',
+        'dl.m.done.text': 'Váš e-mail byl přidán na čekací listinu beta verze.',
+        'form.invalid': 'Zadejte prosím platnou e-mailovou adresu.',
+        'form.empty': 'Napište prosím zprávu.',
+        'form.error': 'Něco se nepovedlo. Zkuste to prosím znovu.',
+        'priv.updated': 'Naposledy aktualizováno: listopad 2026',
+        'priv.title': 'Soukromí',
+        'priv.lead': 'VoiceDoc AI respektuje vaše soukromí. Takto zacházíme s vaším hlasem a daty.',
+        'priv.1.t': 'Šifrované audio streamy',
+        'priv.1.d': 'Váš hlas se přenáší šifrovaným spojením, takže ho nelze cestou zachytit.',
+        'priv.2.t': 'Zpracováno bezpečně, nikdy neukládáno',
+        'priv.2.d': 'Audio a přepisy slouží jen k vytvoření výsledku a po zpracování se neukládají.',
+        'priv.3.t': 'Minimum dat už z principu',
+        'priv.3.d': 'Zpracováváme jen to, co je nutné k vyplnění vašeho dokumentu. Žádné reklamy a vaše data nikdy neprodáváme.',
+        'priv.note': 'Jde o stručné shrnutí pro betaverzi v0.1; plné znění zásad zveřejníme před veřejným vydáním.',
+        'priv.q': 'Máte dotazy k soukromí?',
+        'priv.link': 'Napište nám',
+        'contact.title': 'Kontakt',
+        'contact.text': 'Dotazy, hlášení chyb nebo zpětná vazba k betě? Napište nám — čteme každou zprávu.',
+        'contact.email': 'E-mail podpory',
+        'contact.name': 'Jméno',
+        'contact.name.ph': 'Vaše jméno',
+        'contact.mail': 'Váš e-mail',
+        'contact.msg': 'Zpráva',
+        'contact.msg.ph': 'Jak vám můžeme pomoci?',
+        'contact.send': 'Odeslat zprávu',
+        'contact.done.title': 'Děkujeme!',
+        'contact.done.text': 'Vaše zpráva byla úspěšně odeslána.'
+      },
+
+      ru: {
+        'meta.title': 'VoiceDoc AI — Говорите. Документ заполнится сам.',
+        'meta.desc': 'VoiceDoc AI — настольное приложение для Windows и macOS, которое слушает вашу речь на чешском, английском или русском и автоматически заполняет документы, формы и таблицы.',
+        'lang.label': 'Язык',
+
+        'nav.features': 'Возможности',
+        'nav.how': 'Как это работает',
+        'nav.pricing': 'Цены',
+        'nav.download': 'Скачать',
+
+        'hero.badge': 'Чешский · Английский · Русский — в одном приложении',
+        'hero.t1': 'Говорите.',
+        'hero.t2': 'Документ заполнится сам.',
+        'hero.sub': 'VoiceDoc AI слушает вашу обычную речь, понимает главное и вставляет структурированные данные прямо в документы, формы и таблицы. Хватит печатать. Начните говорить.',
+        'dl.win': 'Скачать для Windows',
+        'dl.mac': 'Скачать для macOS',
+        'dl.meta': 'v0.1.0 · Windows 10/11 и macOS · ~85 МБ',
+        'hero.cta2': 'Узнать больше',
+        'hero.note': 'Windows 10/11 и macOS · Есть бесплатный тариф · Без банковской карты',
+
+        'mock.listening': 'Слушаю · RU',
+        'mock.transcript': '«Счёт для компании Novák s.r.o., ИЧО 12345678, сумма двенадцать тысяч пятьсот крон, оплата до конца месяца…»',
+        'mock.extracted': 'Извлечённые поля',
+        'mock.client': 'Клиент',
+        'mock.id': 'ID компании',
+        'mock.amount': 'Сумма',
+        'mock.due': 'Срок оплаты',
+
+        'stats.langs': 'Языка',
+        'stats.faster': 'Быстрее набора текста',
+        'stats.keyval': '1 клавиша',
+        'stats.hotkey': 'Глобальная горячая клавиша',
+        'stats.start': 'Чтобы начать',
+
+        'feat.label': 'Возможности',
+        'feat.title': 'Для тех, кто говорит быстрее, чем печатает.',
+        'feat.sub': 'Три идеи — один бесшовный рабочий процесс.',
+        'f1.title': 'Речь в структурированные данные',
+        'f1.desc': 'Whisper расшифровывает каждое слово. Затем языковая модель понимает смысл, извлекает имена, числа, даты и адреса и аккуратно раскладывает их по полям.',
+        'f1.l1': 'Транскрипция уровня Whisper',
+        'f1.l2': 'Извлечение данных с помощью LLM',
+        'f1.l3': 'Вывод в виде полей, строк или текста',
+        'f2.title': 'Глобальная горячая клавиша и интеграция',
+        'f2.desc': 'Нажмите одно сочетание клавиш в любом месте Windows или macOS, говорите и отпустите. Результат появится ровно там, где стоит курсор: в Word, Excel, веб-форме или любом настольном приложении.',
+        'f2.l1': 'Работает во всей системе',
+        'f2.l2': 'Заполняет поля, таблицы и документы',
+        'f2.l3': 'Полностью настраиваемое сочетание клавиш',
+        'f3.title': 'Многоязычность из коробки',
+        'f3.desc': 'Переключайтесь между чешским, английским и русским в течение дня — или даже посреди фразы. Язык определяется автоматически, поэтому ничего настраивать не нужно.',
+
+        'how.label': 'Как это работает',
+        'how.title': 'Три секунды от мысли до текста.',
+        's1.title': 'Нажмите и говорите',
+        's1.desc': 'Удерживайте горячую клавишу и говорите так, как сказали бы коллеге. Никаких команд и шаблонов, которые нужно запоминать.',
+        's2.title': 'ИИ структурирует',
+        's2.desc': 'Речь расшифровывается и анализируется. Ключевые данные распознаются и попадают в нужные поля.',
+        's3.title': 'Готово на месте',
+        's3.desc': 'Отпустите клавишу — данные вставятся в документ, форму или таблицу. Проверьте, поправьте и работайте дальше.',
+
+        'price.label': 'Цены',
+        'price.title': 'Просто. Честно. Два тарифа.',
+        'price.sub': 'Начните бесплатно. Переходите на Pro, когда голос станет вашей главной клавиатурой.',
+        'free.name': 'Бесплатный',
+        'free.desc': 'Для знакомства и лёгкого использования.',
+        'free.per': '/ навсегда',
+        'free.f1': 'Базовое заполнение полей голосом',
+        'free.f2': 'Ограниченное число минут в месяц',
+        'free.f3': 'Чешский, английский и русский',
+        'free.f4': 'Стандартная поддержка',
+        'free.cta': 'Начать бесплатно',
+        'pro.badge': 'Лучший выбор для профессионалов',
+        'pro.desc': 'Для ежедневной работы голосом без ограничений.',
+        'pro.discount': '−25% на первый месяц',
+        'pro.first': 'первый месяц · затем $8.99 / месяц',
+        'pro.f6': 'Голосовое программирование — диктуйте код прямо в VS Code и другие IDE',
+        'pro.f7': 'Решение математических и логических задач голосом',
+        'pro.f1': 'Неограниченная транскрипция голоса',
+        'pro.f2': 'Расширенная настройка ИИ и собственные шаблоны',
+        'pro.f3': 'Приоритетная скорость обработки',
+        'pro.f4': 'Всё из бесплатного тарифа',
+        'pro.f5': 'Приоритетная поддержка',
+        'pro.cta': 'Перейти на Pro',
+
+        'dl.title': 'Дайте клавиатуре<br />передохнуть.',
+        'dl.sub': 'Скачайте VoiceDoc AI для Windows или macOS и заполните свой первый документ голосом меньше чем за минуту.',
+
+        'foot.privacy': 'Конфиденциальность',
+        'foot.contact': 'Контакты',
+        'foot.rights': '© {year} VoiceDoc AI. Все права защищены.',
+        'foot.disclaimer': 'VoiceDoc AI — независимый проект на стадии предварительного релиза (бета v0.1). Функции, цены и доступность могут измениться и отличаться в финальной версии.',
+
+        'modal.close': 'Закрыть',
+        'modal.done': 'Готово',
+        'dl.m.preparing': 'Установщик VoiceDoc AI v0.1 готовится…',
+        'dl.m.s1': 'Подготовка установщика…',
+        'dl.m.s2': 'Проверка пакета…',
+        'dl.m.s3': 'Почти готово…',
+        'dl.m.beta.title': 'Бета-доступ скоро откроется',
+        'dl.m.beta.text': 'Установщик пока недоступен. Оставьте email, и мы сообщим, когда откроется бета-версия.',
+        'dl.m.email': 'Адрес электронной почты',
+        'dl.m.placeholder': 'you@example.com',
+        'dl.m.submit': 'Встать в список ожидания беты',
+        'dl.m.fine': 'Без спама — одно письмо, когда откроется бета.',
+        'dl.m.done.title': 'Спасибо!',
+        'dl.m.done.text': 'Ваш email добавлен в список ожидания бета-версии.',
+        'form.invalid': 'Пожалуйста, введите корректный адрес email.',
+        'form.empty': 'Пожалуйста, напишите сообщение.',
+        'form.error': 'Что-то пошло не так. Попробуйте ещё раз.',
+        'priv.updated': 'Обновлено: ноябрь 2026',
+        'priv.title': 'Конфиденциальность',
+        'priv.lead': 'VoiceDoc AI уважает вашу конфиденциальность. Вот как мы обращаемся с вашим голосом и данными.',
+        'priv.1.t': 'Зашифрованные аудиопотоки',
+        'priv.1.d': 'Ваш голос передаётся по зашифрованным соединениям, поэтому его нельзя перехватить по пути.',
+        'priv.2.t': 'Безопасная обработка без хранения',
+        'priv.2.d': 'Аудио и расшифровки используются только для получения результата и не сохраняются после обработки.',
+        'priv.3.t': 'Минимум данных по умолчанию',
+        'priv.3.d': 'Мы обрабатываем только то, что нужно для заполнения документа. Никакой рекламы, и мы никогда не продаём ваши данные.',
+        'priv.note': 'Это краткая сводка для бета-версии v0.1; полная политика будет опубликована до публичного релиза.',
+        'priv.q': 'Вопросы о конфиденциальности?',
+        'priv.link': 'Напишите нам',
+        'contact.title': 'Контакты',
+        'contact.text': 'Вопросы, сообщения об ошибках или отзывы о бета-версии? Напишите нам — мы читаем каждое сообщение.',
+        'contact.email': 'Почта поддержки',
+        'contact.name': 'Имя',
+        'contact.name.ph': 'Ваше имя',
+        'contact.mail': 'Ваш email',
+        'contact.msg': 'Сообщение',
+        'contact.msg.ph': 'Чем мы можем помочь?',
+        'contact.send': 'Отправить сообщение',
+        'contact.done.title': 'Спасибо!',
+        'contact.done.text': 'Ваше сообщение успешно отправлено.'
+      }
+    };
+
+    const DEFAULT_LANG = 'cs';          // change to 'en' for English by default
+    const STORAGE_KEY = 'voicedoc-lang';
+    const HTML_LANG = { en: 'en', cs: 'cs', ru: 'ru' };
+    let currentLang = DEFAULT_LANG;
+
+    function getSavedLang() {
+      try {
+        const v = localStorage.getItem(STORAGE_KEY);
+        return v && I18N[v] ? v : DEFAULT_LANG;
+      } catch (e) { return DEFAULT_LANG; }
+    }
+
+    function translate(key, lang) {
+      const dict = I18N[lang] || I18N[DEFAULT_LANG];
+      const val = dict[key] !== undefined ? dict[key] : I18N.en[key];
+      return typeof val === 'string' ? val.replace('{year}', new Date().getFullYear()) : val;
+    }
+
+    function applyLang(lang) {
+      document.documentElement.lang = HTML_LANG[lang] || lang;
+
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const v = translate(el.dataset.i18n, lang);
+        if (v !== undefined) el.textContent = v;
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+        const v = translate(el.dataset.i18nHtml, lang);
+        if (v !== undefined) el.innerHTML = v;
+      });
+      document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+        const v = translate(el.dataset.i18nAria, lang);
+        if (v !== undefined) el.setAttribute('aria-label', v);
+      });
+
+      document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+        const v = translate(el.dataset.i18nPlaceholder, lang);
+        if (v !== undefined) el.setAttribute('placeholder', v);
+      });
+
+      currentLang = lang;
+      document.title = translate('meta.title', lang);
+      const meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute('content', translate('meta.desc', lang));
+
+      document.querySelectorAll('.lang-btn').forEach((b) => {
+        b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+      });
+    }
+
+    function setLang(lang, animate) {
+      if (!I18N[lang]) lang = DEFAULT_LANG;
+      try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
+
+      if (!animate) { applyLang(lang); return; }
+      document.body.classList.add('lang-swap');
+      setTimeout(() => {
+        applyLang(lang);
+        document.body.classList.remove('lang-swap');
+      }, 150);
+    }
+
+    // Initial render (runs before first paint, no flash)
+    applyLang(getSavedLang());
+
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn.getAttribute('aria-pressed') === 'true') return;
+        setLang(btn.dataset.lang, true);
+      });
+    });
+
+    /* ---------- Scroll reveal ---------- */
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      el.style.transitionDelay = (i % 3) * 80 + 'ms';
+      io.observe(el);
+    });
+
+    /* ---------- Downloads & modals ----------
+       To enable real downloads, fill DOWNLOAD_URLS, e.g. win: 'VoiceDocAI-Setup.exe', mac: 'VoiceDocAI.dmg'.
+       While a URL is empty, the button opens the "preparing / beta waitlist" modal instead.
+       BETA_ENDPOINT: URL that accepts a JSON POST {email, platform} (Formspree, Netlify, your own API...).
+       While it is empty the waitlist form runs in demo mode and sends nothing. */
+    const DOWNLOAD_URLS = { win: '', mac: '' };
+    const BETA_ENDPOINT = '';
+    const CONTACT_ENDPOINT = '';   // same idea for the contact form; empty = demo mode (nothing is sent)
+    const PLATFORMS = {
+      win: { file: 'VoiceDocAI-Setup.exe', meta: 'v0.1.0 · Windows 10/11 · 64-bit' },
+      mac: { file: 'VoiceDocAI.dmg',       meta: 'v0.1.0 · macOS 12+ · Apple Silicon & Intel' }
+    };
+
+    const modalRoot = document.getElementById('modal-root');
+    let activePanel = null, lastFocus = null, closeTimer = null, dlTimer = null, currentPlatform = 'win';
+
+    const $ = (id) => document.getElementById(id);
+    const t = (key) => translate(key, currentLang);
+
+    function focusables(panel) {
+      return Array.from(panel.querySelectorAll('a[href], button:not([disabled]), input, textarea'))
+        .filter((el) => !el.closest('[hidden]'));
+    }
+
+    function showStage(prefix, name, names) {
+      names.forEach((n) => { $(prefix + n).hidden = (n !== name); });
+    }
+
+    function showError(el, key) { el.textContent = t(key); el.hidden = false; }
+
+    function startDownload(platform) {
+      currentPlatform = PLATFORMS[platform] ? platform : 'win';
+      const p = PLATFORMS[currentPlatform];
+      $('dl-file').textContent = p.file;
+      $('dl-meta').textContent = p.meta;
+      showStage('dl-stage-', 'progress', ['progress', 'beta', 'done']);
+      $('beta-form').reset();
+      $('beta-error').hidden = true;
+
+      const bar = $('dl-bar'), pctEl = $('dl-pct'), stepEl = $('dl-step'), track = $('dl-track');
+      let pct = 0;
+      const render = () => {
+        const v = Math.round(pct);
+        bar.style.width = pct + '%';
+        pctEl.textContent = v + '%';
+        track.setAttribute('aria-valuenow', String(v));
+        stepEl.textContent = t(pct < 35 ? 'dl.m.s1' : pct < 75 ? 'dl.m.s2' : 'dl.m.s3');
+      };
+      render();
+
+      dlTimer = setInterval(() => {
+        pct = Math.min(100, pct + (pct < 70 ? 2.2 : pct < 92 ? 1.2 : 0.6));
+        render();
+        if (pct >= 100) {
+          clearInterval(dlTimer);
+          dlTimer = setTimeout(() => {
+            showStage('dl-stage-', 'beta', ['progress', 'beta', 'done']);
+            $('beta-email').focus();
+          }, 450);
+        }
+      }, 55);
+    }
+
+    function resetContact() {
+      $('contact-form').reset();
+      $('ct-error').hidden = true;
+      showStage('ct-stage-', 'form', ['form', 'done']);
+    }
+
+    function openModal(name, opts) {
+      const panel = $('modal-' + name);
+      if (!panel) return;
+      clearTimeout(closeTimer);
+      clearInterval(dlTimer);
+      if (!modalRoot.classList.contains('open')) lastFocus = document.activeElement;
+
+      document.querySelectorAll('.modal-panel.active').forEach((p) => p.classList.remove('active'));
+      panel.classList.add('active');
+      activePanel = panel;
+      modalRoot.classList.add('open');
+      document.documentElement.style.overflow = 'hidden';
+
+      if (name === 'download') startDownload(opts && opts.platform);
+      if (name === 'contact') resetContact();
+
+      void modalRoot.offsetWidth;          // let the browser paint the start state first
+      modalRoot.classList.add('show');
+      panel.focus();
+    }
+
+    function closeModal() {
+      if (!modalRoot.classList.contains('open')) return;
+      clearInterval(dlTimer);
+      modalRoot.classList.remove('show');
+      document.documentElement.style.overflow = '';
+      closeTimer = setTimeout(() => {
+        modalRoot.classList.remove('open');
+        document.querySelectorAll('.modal-panel.active').forEach((p) => p.classList.remove('active'));
+        activePanel = null;
+      }, 250);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    // Download buttons
+    document.querySelectorAll('[data-download]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const platform = btn.dataset.platform || 'win';
+        const url = DOWNLOAD_URLS[platform];
+        if (url) {
+          const a = document.createElement('a');
+          a.href = url; a.download = '';
+          document.body.appendChild(a); a.click(); a.remove();
+          return;
+        }
+        openModal('download', { platform });
+      });
+    });
+
+    // Open / close handlers (footer links, close buttons, backdrop)
+    document.addEventListener('click', (e) => {
+      const opener = e.target.closest('[data-open-modal]');
+      if (opener) { e.preventDefault(); openModal(opener.dataset.openModal); return; }
+      if (e.target.closest('[data-close-modal]') || e.target.classList.contains('modal-wrap')) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!modalRoot.classList.contains('open') || !activePanel) return;
+      if (e.key === 'Escape') { closeModal(); return; }
+      if (e.key !== 'Tab') return;
+      const list = focusables(activePanel);
+      if (!list.length) { e.preventDefault(); return; }
+      const first = list[0], last = list[list.length - 1], cur = document.activeElement;
+      if (e.shiftKey && (cur === first || cur === activePanel)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && cur === last) { e.preventDefault(); first.focus(); }
+    });
+
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Beta waitlist form
+    $('beta-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = $('beta-email'), err = $('beta-error'), btn = e.currentTarget.querySelector('[type="submit"]');
+      const email = input.value.trim();
+      if (!EMAIL_RE.test(email)) { showError(err, 'form.invalid'); input.focus(); return; }
+      err.hidden = true;
+      btn.disabled = true;
+      try {
+        if (BETA_ENDPOINT) {
+          const res = await fetch(BETA_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ email, platform: currentPlatform })
+          });
+          if (!res.ok) throw new Error('bad status');
+        }
+        showStage('dl-stage-', 'done', ['progress', 'beta', 'done']);
+        $('dl-done-btn').focus();
+      } catch (_) {
+        showError(err, 'form.error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // Contact form — shows the success screen (client-side; set CONTACT_ENDPOINT to really send)
+    $('contact-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const btn = form.querySelector('[type="submit"]');
+      const name = $('ct-name').value.trim(), email = $('ct-email').value.trim(), msg = $('ct-msg').value.trim();
+      const err = $('ct-error');
+      if (!EMAIL_RE.test(email)) { showError(err, 'form.invalid'); $('ct-email').focus(); return; }
+      if (!msg) { showError(err, 'form.empty'); $('ct-msg').focus(); return; }
+      err.hidden = true;
+      btn.disabled = true;
+      try {
+        if (CONTACT_ENDPOINT) {
+          const res = await fetch(CONTACT_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ name, email, message: msg })
+          });
+          if (!res.ok) throw new Error('bad status');
+        }
+        showStage('ct-stage-', 'done', ['form', 'done']);
+        $('ct-done-btn').focus();
+      } catch (_) {
+        showError(err, 'form.error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
