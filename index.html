@@ -200,7 +200,8 @@
 
 
     /* ---------- Live AI demo widget ---------- */
-    .demo-btn { display: flex; width: 100%; align-items: center; gap: .85rem; padding: .8rem .95rem; text-align: left; border: 1px solid var(--line); border-radius: 10px;
+    .demo-btns { grid-auto-rows: 1fr; }
+    .demo-btn { display: flex; width: 100%; align-items: center; min-height: 3.4rem; gap: .85rem; padding: .8rem .95rem; text-align: left; border: 1px solid var(--line); border-radius: 10px;
       background: rgba(255,255,255,.02); color: #d4d4d4; font-size: .875rem; font-weight: 500; letter-spacing: -.01em; line-height: 1.3;
       transition: border-color .25s ease, background .25s ease, box-shadow .25s ease, color .25s ease; }
     .demo-btn:hover { border-color: var(--line-hi); background: rgba(255,255,255,.045); box-shadow: 0 0 25px rgba(255,255,255,.06); color: #fff; }
@@ -517,10 +518,10 @@
               <div class="pane-head"><span>mic://demo</span><span id="demo-state" class="text-neutral-400">idle</span></div>
               <div class="p-5 text-left sm:p-6">
                 <p class="demo-msg"><span class="pr">veloce ›</span><span data-i18n="demo.greet">Hi! I’m Veloce Voice. Click a scenario below to see how your speech turns into structured data or code in seconds.</span></p>
-                <div class="mt-5 grid grid-cols-1 gap-2.5" role="group" data-i18n-aria="demo.group" aria-label="Demo scenarios">
-                  <button type="button" class="demo-btn" data-scenario="1" aria-pressed="false"><span class="n">01</span><span class="t" data-i18n="demo.b1">Invoice dictation</span><span class="demo-tag">CZ / EN</span></button>
+                <div class="demo-btns mt-5 grid grid-cols-1 gap-2.5" role="group" data-i18n-aria="demo.group" aria-label="Demo scenarios">
+                  <button type="button" class="demo-btn" data-scenario="1" aria-pressed="false"><span class="n">01</span><span class="t" data-i18n="demo.b1">Invoice dictation</span></button>
                   <button type="button" class="demo-btn" data-scenario="2" aria-pressed="false"><span class="n">02</span><span class="t" data-i18n="demo.b2">Python voice coding</span><span class="demo-tag pro">PRO</span></button>
-                  <button type="button" class="demo-btn" data-scenario="3" aria-pressed="false"><span class="n">03</span><span class="t" data-i18n="demo.b3">Quick task / note</span><span class="demo-tag">RU / EN</span></button>
+                  <button type="button" class="demo-btn" data-scenario="3" aria-pressed="false"><span class="n">03</span><span class="t" data-i18n="demo.b3">Quick task / note</span></button>
                 </div>
                 <div class="demo-wave mt-5" id="demo-wave" aria-hidden="true"></div>
                 <p class="demo-msg mt-3 min-h-[4.9rem] text-neutral-300" id="demo-say" aria-live="polite"></p>
