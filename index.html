@@ -198,6 +198,43 @@
     .card-pro { background: rgba(255,255,255,.055); border-color: rgba(255,255,255,.32); box-shadow: 0 0 45px rgba(255,255,255,.08), inset 0 1px 0 rgba(255,255,255,.14); }
     .card-pro:hover { border-color: rgba(255,255,255,.5); box-shadow: 0 0 60px rgba(255,255,255,.12), inset 0 1px 0 rgba(255,255,255,.2); background: rgba(255,255,255,.07); }
 
+
+    /* ---------- Live AI demo widget ---------- */
+    .demo-btn { display: flex; width: 100%; align-items: center; gap: .85rem; padding: .8rem .95rem; text-align: left; border: 1px solid var(--line); border-radius: 10px;
+      background: rgba(255,255,255,.02); color: #d4d4d4; font-size: .875rem; font-weight: 500; letter-spacing: -.01em; line-height: 1.3;
+      transition: border-color .25s ease, background .25s ease, box-shadow .25s ease, color .25s ease; }
+    .demo-btn:hover { border-color: var(--line-hi); background: rgba(255,255,255,.045); box-shadow: 0 0 25px rgba(255,255,255,.06); color: #fff; }
+    .demo-btn[aria-pressed="true"] { border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.07); color: #fff; box-shadow: 0 0 30px rgba(255,255,255,.08); }
+    .demo-btn .n { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .68rem; color: var(--mute); flex: none; }
+    .demo-btn .t { flex: 1; min-width: 0; }
+    .demo-tag { flex: none; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .62rem; letter-spacing: .04em; padding: .12rem .45rem; border: 1px solid var(--line-hi); border-radius: 999px; color: var(--mute); }
+    .demo-tag.pro { color: #0a0a0a; background: #fff; border-color: #fff; font-weight: 600; }
+    .demo-msg { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .8125rem; line-height: 1.65; color: #d4d4d4; }
+    .demo-msg .pr { color: var(--mute); margin-right: .5rem; }
+    .demo-wave { display: flex; align-items: center; justify-content: space-between; gap: 3px; height: 56px; overflow: hidden; }
+    .demo-wave .bar { width: 2px; transform: scaleY(.14); opacity: .28; animation: none; transition: transform .4s ease, opacity .4s ease; }
+    .demo-wave.on .bar { animation: wave .55s ease-in-out infinite; }
+    .demo-out { min-height: 15.5rem; }
+    .demo-idle { display: grid; place-items: center; min-height: 15.5rem; padding: 1.5rem; text-align: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .78rem; color: var(--mute); }
+    .demo-proc { display: flex; align-items: center; gap: .7rem; padding: 1.1rem 1.25rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .78rem; color: var(--mute); }
+    .demo-proc i { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: blink .7s steps(1) infinite; }
+    .d-in { opacity: 0; transform: translateY(8px); animation: dIn .55s cubic-bezier(.2,.7,.2,1) forwards; animation-delay: calc(var(--i, 0) * 110ms); }
+    @keyframes dIn { to { opacity: 1; transform: none; } }
+    .demo-out .row .val { color: #fff; min-width: 0; overflow-wrap: anywhere; }
+    .dlist { list-style: none; margin: 0; padding: .5rem 0; }
+    .dlist li { display: flex; align-items: baseline; gap: .9rem; padding: .62rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.05); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .8125rem; }
+    .dlist li:last-child { border-bottom: 0; }
+    .dlist .bul { width: 5px; height: 5px; background: #fff; flex: none; transform: translateY(-1px); }
+    .dlist .k { min-width: 5.5rem; }
+    .dlist .val { color: #fff; min-width: 0; overflow-wrap: anywhere; }
+    .prio { display: inline-block; padding: .05rem .5rem; border: 1px solid rgba(255,255,255,.6); border-radius: 999px; font-size: .72rem; }
+    .code { margin: 0; padding: .5rem 0; overflow-x: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .8125rem; line-height: 1.7; color: #d4d4d4; }
+    .code .cl { display: flex; gap: .9rem; padding: 0 1.25rem; white-space: pre; }
+    .code .cl > span:last-child { min-width: 0; }
+    .tk-k { color: #fff; font-weight: 600; } .tk-f { color: #fff; text-decoration: underline; text-decoration-color: rgba(255,255,255,.35); text-underline-offset: 3px; }
+    .tk-t { color: #a3a3a3; font-style: italic; } .tk-s { color: #a3a3a3; } .tk-n { color: #e5e5e5; } .tk-c { color: #6b6b6b; font-style: italic; }
+    @media (prefers-reduced-motion: reduce) { .demo-wave.on .bar { animation: none; transform: scaleY(.7); opacity: .8; } .d-in { animation: none; opacity: 1; transform: none; } .demo-proc i { animation: none; } }
+
     /* ---------- FAQ accordion ---------- */
     .faq { overflow: hidden; }
     .faq-item + .faq-item { border-top: 1px solid var(--line); }
@@ -281,11 +318,11 @@
     .pts { position: absolute; inset: -80px; background-size: 320px 320px; background-position: calc(50% + 80px) 0; opacity: .0;
       -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 45%, #000 20%, transparent 85%);
               mask-image: radial-gradient(ellipse 80% 75% at 50% 45%, #000 20%, transparent 85%);
-      animation: pulse var(--t,6s) ease-in-out var(--d,0s) infinite; }
+      animation: ptpulse var(--t,6s) ease-in-out var(--d,0s) infinite; }
     .pts-a { background-image: radial-gradient(circle, #fff 0 1.4px, transparent 2.2px); --t: 6s; }
     .pts-b { background-image: radial-gradient(circle, #fff 0 1.4px, transparent 2.2px); background-position: calc(50% + 160px) 80px; --t: 7.5s; --d: -2.5s; }
     .pts-c { background-image: radial-gradient(circle, #fff 0 1px, transparent 1.8px); background-position: calc(50% + 160px) 0; --t: 9s; --d: -5s; }
-    @keyframes pulse { 0%,100% { opacity: .05; } 50% { opacity: .5; } }
+    @keyframes ptpulse { 0%,100% { opacity: .05; } 50% { opacity: .5; } }
     @media (max-width: 767px) { .orbit, .rng.hide-sm { display: none; } .blob { filter: blur(44px); } }
 
     /* ---------- Footer wordmark: dot-matrix VELOCE + cursor light ---------- */
@@ -456,6 +493,50 @@
                 <span>utf-8 · v0.1.0</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LIVE DEMO ============ -->
+    <section id="demo" class="mx-auto max-w-6xl px-6 pb-28 pt-4">
+      <div class="max-w-3xl">
+        <p class="lbl" data-i18n="demo.label">Live demo</p>
+        <h2 class="h2 mt-5" data-i18n="demo.title">Try it right here.</h2>
+      </div>
+      <div class="relative mt-12">
+        <i class="cm" aria-hidden="true"></i>
+        <div class="term" id="demo-term">
+          <div class="term-bar">
+            <div class="flex items-center gap-1.5" aria-hidden="true"><i class="wdot"></i><i class="wdot"></i><i class="wdot"></i></div>
+            <div class="term-title flex items-center justify-center gap-2"><span class="dot" aria-hidden="true"></span><span>[Veloce Core v0.1 Online]</span></div>
+            <div class="hidden justify-end sm:flex" aria-hidden="true"><span class="mono text-[10px] text-neutral-600">demo://sandbox</span></div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-5">
+            <div class="min-w-0 border-b border-white/10 md:col-span-2 md:border-b-0 md:border-r">
+              <div class="pane-head"><span>mic://demo</span><span id="demo-state" class="text-neutral-400">idle</span></div>
+              <div class="p-5 text-left sm:p-6">
+                <p class="demo-msg"><span class="pr">veloce ›</span><span data-i18n="demo.greet">Hi! I’m Veloce Voice. Click a scenario below to see how your speech turns into structured data or code in seconds.</span></p>
+                <div class="mt-5 grid grid-cols-1 gap-2.5" role="group" data-i18n-aria="demo.group" aria-label="Demo scenarios">
+                  <button type="button" class="demo-btn" data-scenario="1" aria-pressed="false"><span class="n">01</span><span class="t" data-i18n="demo.b1">Invoice dictation</span><span class="demo-tag">CZ / EN</span></button>
+                  <button type="button" class="demo-btn" data-scenario="2" aria-pressed="false"><span class="n">02</span><span class="t" data-i18n="demo.b2">Python voice coding</span><span class="demo-tag pro">PRO</span></button>
+                  <button type="button" class="demo-btn" data-scenario="3" aria-pressed="false"><span class="n">03</span><span class="t" data-i18n="demo.b3">Quick task / note</span><span class="demo-tag">RU / EN</span></button>
+                </div>
+                <div class="demo-wave mt-5" id="demo-wave" aria-hidden="true"></div>
+                <p class="demo-msg mt-3 min-h-[4.9rem] text-neutral-300" id="demo-say" aria-live="polite"></p>
+              </div>
+            </div>
+            <div class="min-w-0 text-left md:col-span-3">
+              <div class="pane-head"><span id="demo-file">output</span><span id="demo-outlabel"></span></div>
+              <div class="demo-out" id="demo-out" aria-live="polite">
+                <div class="demo-idle" data-i18n="demo.idle">Pick a scenario to start.</div>
+              </div>
+            </div>
+          </div>
+          <div class="statusbar" aria-hidden="true">
+            <span class="flex items-center gap-2"><span class="dot"></span><span id="demo-status">ready</span></span>
+            <span class="hidden sm:inline">whisper → llm → cursor</span>
+            <span>utf-8 · v0.1.0</span>
           </div>
         </div>
       </div>
@@ -651,8 +732,24 @@
             <span data-i18n="faq.q4">Q4</span><i class="faq-ico" aria-hidden="true"></i>
           </button></h3>
           <div class="faq-a" id="faq-a4" role="region" aria-labelledby="faq-q4"><div>
-            <div class="faq-body"><p data-i18n="faq.a4">A4</p>
-            <button type="button" class="faq-link" data-open-modal="privacy" data-i18n="faq.a4.link">Read the privacy summary</button></div>
+            <div class="faq-body"><p data-i18n="faq.a4">A4</p></div>
+          </div></div>
+        </div>
+        <div class="faq-item">
+          <h3><button type="button" class="faq-q" id="faq-q5" aria-expanded="false" aria-controls="faq-a5">
+            <span data-i18n="faq.q5">Q5</span><i class="faq-ico" aria-hidden="true"></i>
+          </button></h3>
+          <div class="faq-a" id="faq-a5" role="region" aria-labelledby="faq-q5"><div>
+            <div class="faq-body"><p data-i18n="faq.a5">A5</p></div>
+          </div></div>
+        </div>
+        <div class="faq-item">
+          <h3><button type="button" class="faq-q" id="faq-q6" aria-expanded="false" aria-controls="faq-a6">
+            <span data-i18n="faq.q6">Q6</span><i class="faq-ico" aria-hidden="true"></i>
+          </button></h3>
+          <div class="faq-a" id="faq-a6" role="region" aria-labelledby="faq-q6"><div>
+            <div class="faq-body"><p data-i18n="faq.a6">A6</p>
+            <button type="button" class="faq-link" data-open-modal="privacy" data-i18n="faq.a6.link">Read the privacy summary</button></div>
           </div></div>
         </div>
         </div>
@@ -697,10 +794,10 @@
             <p class="mt-1 text-sm text-neutral-400" data-i18n="pro.desc">For daily, unlimited voice work.</p>
             <div class="mt-8">
               <div class="flex items-baseline gap-3">
-                <span class="text-6xl font-semibold tracking-tight">$6.74</span>
-                <span class="mono text-lg text-neutral-600 line-through">$8.99</span>
+                <span class="text-6xl font-semibold tracking-tight">$7.49</span>
+                <span class="mono text-lg text-neutral-600 line-through">$9.99</span>
               </div>
-              <p class="mono mt-3 text-xs text-neutral-400" data-i18n="pro.first">first month · then $8.99 / month</p>
+              <p class="mono mt-3 text-xs text-neutral-400" data-i18n="pro.first">first month · then $9.99 / month</p>
             </div>
             <ul class="mt-8 flex-1 space-y-3.5 border-t border-white/15 pt-7 text-sm text-neutral-200">
               <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f1">Unlimited voice transcription</span></li>
@@ -965,15 +1062,42 @@
         'req.v.net': 'Internet connection',
         'faq.label': 'FAQ',
         'faq.title': 'Common questions, short answers.',
-        'faq.q1': 'What apps are supported?',
-        'faq.a1': 'Veloce Voice works anywhere you can type: Word, Excel, VS Code, web browsers and any ordinary text field. If there is a cursor, your voice can fill it. Dictating code with voice coding is part of Pro.',
-        'faq.q2': 'How does the global hotkey work?',
-        'faq.a2': 'Hold your shortcut, speak, then release. The text appears right at your cursor, in whatever app you are using. You can choose your own shortcut.',
-        'faq.q3': 'What are the Free plan limits?',
-        'faq.a3': 'Free includes 60 minutes of voice per month, and each recording can last up to 1 minute. Pro removes the limits with unlimited transcription.',
-        'faq.q4': 'Is my data secure?',
-        'faq.a4': 'Yes. Audio streams are encrypted in transit, and transcripts are not stored after processing.',
-        'faq.a4.link': 'Read the privacy summary',
+        'faq.q1': 'How is Veloce Voice different from standard OS dictation?',
+        'faq.a1': 'Built-in dictation hands you one raw wall of text and stops there. Veloce Voice runs your speech through an LLM that understands context: it picks out the names, amounts, dates and tasks you mention and places each one in the right field, table cell or line of code. You get structured, ready-to-use results instead of a transcript you still have to clean up.',
+        'faq.q2': 'Which apps and fields are supported?',
+        'faq.a2': 'Veloce Voice works system-wide, anywhere you can place a cursor: Word, Excel, VS Code, Notion, browser forms, email, chat and any ordinary text field. Hold your hotkey, speak, release, and the result appears right where you are typing.',
+        'faq.q3': 'Do I need to switch languages manually?',
+        'faq.a3': 'No. Veloce Voice detects Czech, English and Russian automatically in real time, even when you change language in the middle of a sentence. There is no language menu to set before you speak.',
+        'faq.q4': 'What are the exact limits of the Free plan?',
+        'faq.a4': 'Free includes 60 minutes of voice per month, with up to 1 minute per single recording. No credit card is required. Pro removes these limits with unlimited transcription.',
+        'faq.q5': 'What is Voice Coding in the Pro plan?',
+        'faq.a5': 'Voice Coding lets you dictate logic and code syntax straight into IDEs such as VS Code: describe a function out loud and get properly formatted code at your cursor. Pro also includes voice-powered math and logic problem solving.',
+        'faq.q6': 'Is my voice data private and secure?',
+        'faq.a6': 'Yes. Audio is sent over encrypted connections, and nothing is kept afterwards: audio and transcripts are never stored on our servers once processing finishes.',
+        'faq.a6.link': 'Read the privacy summary',
+        'demo.label': 'Live demo',
+        'demo.title': 'Try it right here.',
+        'demo.greet': 'Hi! I’m Veloce Voice. Click a scenario below to see how your speech turns into structured data or code in seconds.',
+        'demo.group': 'Demo scenarios',
+        'demo.b1': 'Invoice dictation',
+        'demo.b2': 'Python voice coding',
+        'demo.b3': 'Quick task / note',
+        'demo.idle': 'Pick a scenario to start.',
+        'demo.proc': 'Transcribing and structuring…',
+        'demo.o2': 'Generated code',
+        'demo.o3': 'Structured note',
+        'demo.s1.say': '“Invoice for Novák Ltd., company ID 12345678, amount twelve thousand five hundred crowns, due by the end of the month.”',
+        'demo.s1.due': 'Nov 30, 2026',
+        'demo.s2.say': '“Create a function calculate VAT. It takes a price and a rate, default twenty-one percent, and returns the price with VAT rounded to two decimals.”',
+        'demo.s3.say': '“Note for the team: design sync on Thursday, prepare the pricing deck, deadline Friday five p.m., high priority.”',
+        'demo.s3.k1': 'Task',
+        'demo.s3.v1': 'Prepare the pricing deck',
+        'demo.s3.k2': 'Meeting',
+        'demo.s3.v2': 'Design sync · Thursday',
+        'demo.s3.k3': 'Deadline',
+        'demo.s3.v3': 'Friday, 5:00 PM',
+        'demo.s3.k4': 'Priority',
+        'demo.s3.v4': 'High',
 
         'feat.label': 'Features',
         'feat.title': 'Built for people who talk faster than they type.',
@@ -1014,7 +1138,7 @@
         'pro.badge': 'Best for Professionals',
         'pro.desc': 'For daily, unlimited voice work.',
         'pro.discount': '−25% first month',
-        'pro.first': 'first month · then $8.99 / month',
+        'pro.first': 'first month · then $9.99 / month',
         'pro.f6': 'Voice coding — dictate code straight into VS Code and other IDEs',
         'pro.f7': 'Voice-powered math & logic problem solving',
         'pro.f1': 'Unlimited voice transcription',
@@ -1128,15 +1252,42 @@
         'req.v.net': 'Připojení k internetu',
         'faq.label': 'Časté dotazy',
         'faq.title': 'Časté otázky, stručné odpovědi.',
-        'faq.q1': 'Které aplikace jsou podporované?',
-        'faq.a1': 'Veloce Voice funguje všude, kam můžete psát: ve Wordu, Excelu, VS Code, webových prohlížečích i v běžných textových polích. Kde je kurzor, tam může text vyplnit váš hlas. Diktování kódu hlasem je součástí tarifu Pro.',
-        'faq.q2': 'Jak funguje globální zkratka?',
-        'faq.a2': 'Podržte zkratku, mluvte a pusťte ji. Text se objeví přesně tam, kde máte kurzor, v jakékoli aplikaci, kterou právě používáte. Zkratku si můžete zvolit sami.',
-        'faq.q3': 'Jaké jsou limity tarifu Zdarma?',
-        'faq.a3': 'Tarif Zdarma zahrnuje 60 minut hlasu měsíčně a jedna nahrávka může trvat nejvýše 1 minutu. Tarif Pro limity ruší a nabízí neomezený přepis.',
-        'faq.q4': 'Jsou moje data v bezpečí?',
-        'faq.a4': 'Ano. Audio streamy jsou při přenosu šifrované a přepisy se po zpracování neukládají.',
-        'faq.a4.link': 'Zobrazit shrnutí soukromí',
+        'faq.q1': 'Čím se Veloce Voice liší od standardního diktování v systému?',
+        'faq.a1': 'Vestavěné diktování vám dá jen jednu surovou změť textu a tím končí. Veloce Voice posílá vaši řeč přes LLM, který rozumí kontextu: vybere jména, částky, data a úkoly, které zmíníte, a každé vloží do správného pole, buňky tabulky nebo řádku kódu. Dostanete strukturovaný výsledek připravený k použití, ne přepis, který ještě musíte čistit.',
+        'faq.q2': 'Které aplikace a pole jsou podporované?',
+        'faq.a2': 'Veloce Voice funguje v celém systému, všude, kam lze umístit kurzor: ve Wordu, Excelu, VS Code, Notionu, webových formulářích, e-mailu, chatu i v běžných textových polích. Podržte zkratku, mluvte, pusťte ji a výsledek se objeví přesně tam, kde píšete.',
+        'faq.q3': 'Musím přepínat jazyky ručně?',
+        'faq.a3': 'Ne. Veloce Voice automaticky rozpozná češtinu, angličtinu a ruštinu v reálném čase, i když jazyk změníte uprostřed věty. Před mluvením nemusíte nic nastavovat.',
+        'faq.q4': 'Jaké jsou přesné limity tarifu Zdarma?',
+        'faq.a4': 'Tarif Zdarma zahrnuje 60 minut hlasu měsíčně, nejvýše 1 minutu na jednu nahrávku. Nevyžaduje platební kartu. Tarif Pro tyto limity ruší a nabízí neomezený přepis.',
+        'faq.q5': 'Co je hlasové programování v tarifu Pro?',
+        'faq.a5': 'Hlasové programování vám umožňuje diktovat logiku a syntaxi kódu přímo do IDE, například VS Code: popište funkci nahlas a na kurzoru se objeví správně formátovaný kód. Pro zahrnuje také hlasové řešení matematických a logických úloh.',
+        'faq.q6': 'Jsou moje hlasová data soukromá a v bezpečí?',
+        'faq.a6': 'Ano. Audio se přenáší šifrovaně a nic se neuchovává: zvuk ani přepisy se po dokončení zpracování na našich serverech neukládají.',
+        'faq.a6.link': 'Zobrazit shrnutí soukromí',
+        'demo.label': 'Živá ukázka',
+        'demo.title': 'Vyzkoušejte to hned tady.',
+        'demo.greet': 'Ahoj! Jsem Veloce Voice. Klikněte na scénář níže a uvidíte, jak se vaše řeč během několika sekund promění ve strukturovaná data nebo kód.',
+        'demo.group': 'Ukázkové scénáře',
+        'demo.b1': 'Diktování faktury',
+        'demo.b2': 'Hlasové programování v Pythonu',
+        'demo.b3': 'Rychlý úkol / poznámka',
+        'demo.idle': 'Vyberte scénář a začněte.',
+        'demo.proc': 'Přepisuji a strukturuji…',
+        'demo.o2': 'Vygenerovaný kód',
+        'demo.o3': 'Strukturovaná poznámka',
+        'demo.s1.say': '„Faktura pro firmu Novák s.r.o., IČO 12345678, částka dvanáct tisíc pět set korun, splatnost do konce měsíce.“',
+        'demo.s1.due': '30. 11. 2026',
+        'demo.s2.say': '„Vytvoř funkci calculate VAT. Přijímá cenu a sazbu, výchozí jedenadvacet procent, a vrací cenu s DPH zaokrouhlenou na dvě desetinná místa.“',
+        'demo.s3.say': '„Poznámka pro tým: ve čtvrtek schůzka s designéry, připravit prezentaci ceníku, termín v pátek v pět odpoledne, vysoká priorita.“',
+        'demo.s3.k1': 'Úkol',
+        'demo.s3.v1': 'Připravit prezentaci ceníku',
+        'demo.s3.k2': 'Schůzka',
+        'demo.s3.v2': 'Schůzka s designéry · čtvrtek',
+        'demo.s3.k3': 'Termín',
+        'demo.s3.v3': 'Pátek, 17:00',
+        'demo.s3.k4': 'Priorita',
+        'demo.s3.v4': 'Vysoká',
 
         'feat.label': 'Funkce',
         'feat.title': 'Pro ty, kdo mluví rychleji, než píší.',
@@ -1177,7 +1328,7 @@
         'pro.badge': 'Nejlepší pro profesionály',
         'pro.desc': 'Pro každodenní neomezenou práci s hlasem.',
         'pro.discount': '−25 % první měsíc',
-        'pro.first': 'první měsíc · poté $8.99 / měsíc',
+        'pro.first': 'první měsíc · poté $9.99 / měsíc',
         'pro.f6': 'Hlasové programování — diktujte kód přímo do VS Code a dalších IDE',
         'pro.f7': 'Řešení matematických a logických úloh hlasem',
         'pro.f1': 'Neomezený přepis hlasu',
@@ -1291,15 +1442,42 @@
         'req.v.net': 'Подключение к интернету',
         'faq.label': 'Вопросы и ответы',
         'faq.title': 'Частые вопросы, короткие ответы.',
-        'faq.q1': 'Какие приложения поддерживаются?',
-        'faq.a1': 'Veloce Voice работает везде, где можно печатать: в Word, Excel, VS Code, браузерах и любых обычных текстовых полях. Где есть курсор, там ваш голос может заполнять текст. Диктовка кода голосом входит в тариф Pro.',
-        'faq.q2': 'Как работает глобальная горячая клавиша?',
-        'faq.a2': 'Удерживайте сочетание клавиш, говорите и отпустите. Текст появится ровно там, где стоит курсор, в любом приложении, которым вы пользуетесь. Сочетание клавиш можно выбрать самому.',
-        'faq.q3': 'Каковы ограничения бесплатного тарифа?',
-        'faq.a3': 'Бесплатный тариф включает 60 минут голоса в месяц, а одна запись может длиться не более 1 минуты. Тариф Pro снимает ограничения и даёт неограниченную транскрипцию.',
-        'faq.q4': 'Мои данные в безопасности?',
-        'faq.a4': 'Да. Аудиопотоки шифруются при передаче, а расшифровки не сохраняются после обработки.',
-        'faq.a4.link': 'Открыть сводку о конфиденциальности',
+        'faq.q1': 'Чем Veloce Voice отличается от стандартной диктовки в системе?',
+        'faq.a1': 'Встроенная диктовка выдаёт один сплошной «кусок» текста и на этом заканчивается. Veloce Voice пропускает вашу речь через LLM, который понимает контекст: он выделяет названные имена, суммы, даты и задачи и помещает каждое в нужное поле, ячейку таблицы или строку кода. Вы получаете структурированный результат, готовый к работе, а не расшифровку, которую ещё нужно приводить в порядок.',
+        'faq.q2': 'Какие приложения и поля поддерживаются?',
+        'faq.a2': 'Veloce Voice работает во всей системе, везде, где можно поставить курсор: в Word, Excel, VS Code, Notion, веб-формах, почте, чатах и любых обычных текстовых полях. Удерживайте горячую клавишу, говорите, отпустите, и результат появится прямо там, где вы печатаете.',
+        'faq.q3': 'Нужно ли переключать язык вручную?',
+        'faq.a3': 'Нет. Veloce Voice автоматически распознаёт чешский, английский и русский в реальном времени, даже если вы меняете язык посреди предложения. Ничего настраивать перед записью не нужно.',
+        'faq.q4': 'Каковы точные ограничения бесплатного тарифа?',
+        'faq.a4': 'Бесплатный тариф включает 60 минут голоса в месяц, до 1 минуты на одну запись. Банковская карта не требуется. Тариф Pro снимает эти ограничения и даёт неограниченную расшифровку.',
+        'faq.q5': 'Что такое голосовое программирование в тарифе Pro?',
+        'faq.a5': 'Голосовое программирование позволяет диктовать логику и синтаксис кода прямо в IDE, например в VS Code: опишите функцию вслух, и в месте курсора появится правильно отформатированный код. В Pro также входит решение математических и логических задач голосом.',
+        'faq.q6': 'Мои голосовые данные в безопасности и конфиденциальны?',
+        'faq.a6': 'Да. Аудио передаётся по зашифрованным соединениям, и ничего не хранится: звук и расшифровки не сохраняются на наших серверах после завершения обработки.',
+        'faq.a6.link': 'Открыть сводку о конфиденциальности',
+        'demo.label': 'Живая демонстрация',
+        'demo.title': 'Попробуйте прямо здесь.',
+        'demo.greet': 'Привет! Я Veloce Voice. Нажмите на сценарий ниже, и вы увидите, как ваша речь за секунды превращается в структурированные данные или код.',
+        'demo.group': 'Демо-сценарии',
+        'demo.b1': 'Диктовка счёта',
+        'demo.b2': 'Голосовое программирование на Python',
+        'demo.b3': 'Быстрая задача / заметка',
+        'demo.idle': 'Выберите сценарий, чтобы начать.',
+        'demo.proc': 'Распознаю и структурирую…',
+        'demo.o2': 'Сгенерированный код',
+        'demo.o3': 'Структурированная заметка',
+        'demo.s1.say': '«Счёт для компании Novák s.r.o., ID компании 12345678, сумма двенадцать тысяч пятьсот крон, оплатить до конца месяца.»',
+        'demo.s1.due': '30.11.2026',
+        'demo.s2.say': '«Создай функцию calculate VAT. Она принимает цену и ставку, по умолчанию двадцать один процент, и возвращает цену с НДС, округлённую до двух знаков.»',
+        'demo.s3.say': '«Заметка для команды: в четверг встреча с дизайнерами, подготовить презентацию с тарифами, срок — пятница, пять часов вечера, высокий приоритет.»',
+        'demo.s3.k1': 'Задача',
+        'demo.s3.v1': 'Подготовить презентацию с тарифами',
+        'demo.s3.k2': 'Встреча',
+        'demo.s3.v2': 'Встреча с дизайнерами · четверг',
+        'demo.s3.k3': 'Срок',
+        'demo.s3.v3': 'Пятница, 17:00',
+        'demo.s3.k4': 'Приоритет',
+        'demo.s3.v4': 'Высокий',
 
         'feat.label': 'Возможности',
         'feat.title': 'Для тех, кто говорит быстрее, чем печатает.',
@@ -1340,7 +1518,7 @@
         'pro.badge': 'Лучший выбор для профессионалов',
         'pro.desc': 'Для ежедневной работы голосом без ограничений.',
         'pro.discount': '−25% на первый месяц',
-        'pro.first': 'первый месяц · затем $8.99 / месяц',
+        'pro.first': 'первый месяц · затем $9.99 / месяц',
         'pro.f6': 'Голосовое программирование — диктуйте код прямо в VS Code и другие IDE',
         'pro.f7': 'Решение математических и логических задач голосом',
         'pro.f1': 'Неограниченная транскрипция голоса',
@@ -1448,6 +1626,7 @@
       document.querySelectorAll('.lang-btn').forEach((b) => {
         b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
       });
+      if (window.veloceDemoRender) window.veloceDemoRender();
     }
 
     function setLang(lang, animate) {
@@ -1496,6 +1675,92 @@
         }
       });
     });
+
+    /* ---------- Live AI demo: speech -> structured output ---------- */
+    (() => {
+      const out = document.getElementById('demo-out'), say = document.getElementById('demo-say');
+      const wave = document.getElementById('demo-wave'), stateEl = document.getElementById('demo-state');
+      const statusEl = document.getElementById('demo-status');
+      const fileEl = document.getElementById('demo-file'), labelEl = document.getElementById('demo-outlabel');
+      const btns = [...document.querySelectorAll('.demo-btn')];
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const tr = (k) => translate(k, currentLang);
+      const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      const PROCESS_MS = reduce ? 0 : 800;
+
+      for (let i = 0; i < 56; i++) {
+        const h = 8 + Math.abs(Math.sin(i * 0.5) * Math.cos(i * 0.21)) * 40 + (i % 4) * 2;
+        wave.insertAdjacentHTML('beforeend', '<span class="bar" style="height:' + h.toFixed(0) + 'px;animation-delay:' + ((((i * 37) % 100) / 100) * 0.5).toFixed(2) + 's"></span>');
+      }
+
+      // Python sample (syntax highlighted in grayscale)
+      const CODE = [
+        '<span class="tk-k">def</span> <span class="tk-f">calculate_vat</span>(price: <span class="tk-t">float</span>, rate: <span class="tk-t">float</span> = <span class="tk-n">21.0</span>) -&gt; <span class="tk-t">float</span>:',
+        '    <span class="tk-s">&quot;&quot;&quot;Return the price including VAT.&quot;&quot;&quot;</span>',
+        '    vat = price * rate / <span class="tk-n">100</span>',
+        '    <span class="tk-k">return</span> <span class="tk-f">round</span>(price + vat, <span class="tk-n">2</span>)',
+        '',
+        '<span class="tk-c"># calculate_vat(12500)  →  15125.0</span>'
+      ];
+
+      function outputHTML(n) {
+        if (n === 1) {
+          const rows = [['mock.client', 'Novák s.r.o.'], ['mock.id', '12345678'], ['mock.amount', '12 500 CZK'], ['mock.due', tr('demo.s1.due')]];
+          return '<div class="py-2">' + rows.map((r, i) =>
+            '<div class="row d-in" style="--i:' + i + '"><span class="gutter">' + (i + 1) + '</span><span class="k">' + esc(tr(r[0])) + '</span><span class="leader"></span><span class="val">' + esc(r[1]) + '</span></div>').join('') + '</div>';
+        }
+        if (n === 2) {
+          return '<pre class="code" tabindex="0">' + CODE.map((l, i) =>
+            '<span class="cl d-in" style="--i:' + i + '"><span class="gutter">' + (l ? i + 1 : '') + '</span><span>' + (l || ' ') + '</span></span>').join('') + '</pre>';
+        }
+        let h = '<ul class="dlist">';
+        for (let i = 1; i <= 4; i++) {
+          const v = esc(tr('demo.s3.v' + i));
+          h += '<li class="d-in" style="--i:' + (i - 1) + '"><i class="bul" aria-hidden="true"></i><span class="k">' + esc(tr('demo.s3.k' + i)) + '</span><span class="val">' + (i === 4 ? '<span class="prio">' + v + '</span>' : v) + '</span></li>';
+        }
+        return h + '</ul>';
+      }
+
+      const META = { 1: ['fields.json', () => tr('mock.extracted')], 2: ['main.py', () => tr('demo.o2')], 3: ['note.md', () => tr('demo.o3')] };
+      const S = { n: 0, done: false, timer: 0 };
+
+      function setState(txt, status) { stateEl.textContent = txt; statusEl.textContent = status; }
+
+      function render(animate) {
+        btns.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.scenario) === S.n)));
+        if (!S.n) { return; }
+        say.innerHTML = '<span class="pr">you ›</span>' + esc(tr('demo.s' + S.n + '.say'));
+        fileEl.textContent = META[S.n][0]; labelEl.textContent = META[S.n][1]();
+        if (S.done) {
+          out.innerHTML = outputHTML(S.n);
+          if (!animate) out.querySelectorAll('.d-in').forEach((e) => { e.style.animation = 'none'; e.style.opacity = 1; e.style.transform = 'none'; });
+        } else {
+          out.innerHTML = '<div class="demo-proc"><i></i><span>' + esc(tr('demo.proc')) + '</span></div>';
+        }
+      }
+
+      function run(n) {
+        clearTimeout(S.timer);
+        S.n = n; S.done = false;
+        wave.classList.add('on');
+        setState('listening…', 'processing…');
+        render(true);
+        S.timer = setTimeout(() => {
+          S.done = true;
+          wave.classList.remove('on');
+          setState('done', 'inserted at cursor ✓');
+          render(true);
+          // on phones the result sits below the buttons: bring it into view
+          if (matchMedia('(max-width: 767px)').matches && out.getBoundingClientRect().top > innerHeight * 0.75) {
+            out.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+          }
+        }, PROCESS_MS);
+      }
+
+      btns.forEach((b) => b.addEventListener('click', () => run(Number(b.dataset.scenario))));
+      // language switch: re-render the current scenario in the new language (no re-animation)
+      window.veloceDemoRender = () => { if (S.n) render(false); };
+    })();
 
     /* ---------- Ambient parallax + footer wordmark light ---------- */
     (() => {
