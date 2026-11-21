@@ -2072,8 +2072,8 @@
        BETA_ENDPOINT: URL that accepts a JSON POST {email, platform} (Formspree, Netlify, your own API...).
        While it is empty the waitlist form runs in demo mode and sends nothing. */
     const DOWNLOAD_URLS = { win: '', mac: '' };
-    const BETA_ENDPOINT = 'http://127.0.0.1:8000/api/beta';
-    const CONTACT_ENDPOINT = 'http://127.0.0.1:8000/api/contact';
+    const BETA_ENDPOINT = 'https://veloce-voice-api.onrender.com/api/beta';
+    const CONTACT_ENDPOINT = 'https://veloce-voice-api.onrender.com/api/contact';
 // same idea for the contact form; empty = demo mode (nothing is sent)
     const PLATFORMS = {
       win: { file: 'VeloceVoice-Setup.exe', meta: 'v0.1.0 · Windows 10/11 · 64-bit' },
@@ -2264,7 +2264,7 @@
     /* ---------- Plan checkout (Plus / Pro) ----------
        CHECKOUT_ENDPOINT: URL that accepts a JSON POST {email, plan, cycle, due}. While empty the form runs
        in demo mode: nothing is sent and no payment is taken; the confirmation screen is shown. */
-const CHECKOUT_ENDPOINT = 'http://127.0.0.1:8000/api/checkout';
+const CHECKOUT_ENDPOINT = 'https://veloce-voice-api.onrender.com/api/checkout';
     const PLAN_PRICE = { plus: 899, pro: 1599 };           // regular monthly price, in cents
     const PLAN_LABEL = { plus: 'Plus', pro: 'Pro' };
     const CYCLES = ['monthly', 'six', 'year'];
