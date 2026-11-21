@@ -236,6 +236,39 @@
     .tk-t { color: #a3a3a3; font-style: italic; } .tk-s { color: #a3a3a3; } .tk-n { color: #e5e5e5; } .tk-c { color: #6b6b6b; font-style: italic; }
     @media (prefers-reduced-motion: reduce) { .demo-wave.on .bar { animation: none; transform: scaleY(.7); opacity: .8; } .d-in { animation: none; opacity: 1; transform: none; } .demo-proc i { animation: none; } }
 
+
+    /* ---------- Pricing (3 plans) + checkout modal ---------- */
+    .modal-panel.checkout { max-width: 34rem; }
+    .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin: 0; min-width: 0; border: 1px solid var(--line-hi); border-radius: 11px; background: rgba(255,255,255,.03); }
+    .seg-opt { position: relative; display: block; cursor: pointer; }
+    .seg-face { display: flex; align-items: center; justify-content: center; height: 38px; border-radius: 8px; font-size: .875rem; font-weight: 600; color: var(--dim); transition: background .25s ease, color .25s ease, box-shadow .25s ease; }
+    .seg-opt:hover .seg-face { color: #fff; }
+    .seg-opt input:checked + .seg-face { background: #fff; color: #0a0a0a; box-shadow: 0 0 24px rgba(255,255,255,.18); }
+    .seg-opt input:focus-visible + .seg-face, .cyc input:focus-visible + .cyc-card { outline: 2px solid #fff; outline-offset: 2px; }
+    .cyc { position: relative; display: block; cursor: pointer; }
+    .cyc-card { display: flex; align-items: center; gap: .9rem; padding: .85rem 1rem; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.02);
+      transition: border-color .25s ease, background .25s ease, box-shadow .25s ease; }
+    .cyc:hover .cyc-card { border-color: var(--line-hi); background: rgba(255,255,255,.04); }
+    .cyc input:checked + .cyc-card { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.07); box-shadow: 0 0 30px rgba(255,255,255,.07); }
+    .cyc-dot { flex: none; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.35); transition: border-color .2s ease; }
+    .cyc-dot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; transform: scale(0); transition: transform .2s ease; }
+    .cyc input:checked + .cyc-card .cyc-dot { border-color: #fff; }
+    .cyc input:checked + .cyc-card .cyc-dot::after { transform: scale(1); }
+    .cyc-main { min-width: 0; flex: 1; }
+    .cyc-name { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; font-size: .9rem; font-weight: 600; color: #fff; }
+    .cyc-note { display: block; margin-top: .25rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .68rem; line-height: 1.45; color: var(--mute); }
+    .cyc-price { flex: none; text-align: right; }
+    .cyc-price b { display: block; font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; color: #fff; }
+    .cyc-price small { display: block; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .64rem; color: var(--mute); }
+    .pill-sm { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .6rem; font-weight: 500; padding: .08rem .42rem; border: 1px solid var(--line-hi); border-radius: 999px; color: #d4d4d4; white-space: nowrap; }
+    .pill-sm.best { background: #fff; color: #0a0a0a; border-color: #fff; font-weight: 600; }
+    .sum { margin-top: 1.1rem; padding: .85rem 1rem; border: 1px dashed rgba(255,255,255,.18); border-radius: 10px; background: rgba(255,255,255,.02); }
+    .sum-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .2rem 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .75rem; color: var(--mute); }
+    .sum-row b { font-weight: 500; color: #d4d4d4; text-align: right; }
+    .sum-total { margin-top: .45rem; padding-top: .75rem; border-top: 1px solid var(--line); color: #fff; font-size: .8rem; }
+    .sum-total b { font-family: 'Inter', sans-serif; font-size: 1.6rem; font-weight: 600; letter-spacing: -.02em; color: #fff; }
+    .sum-note { margin-top: .35rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .68rem; color: var(--mute); }
+
     /* ---------- FAQ accordion ---------- */
     .faq { overflow: hidden; }
     .faq-item + .faq-item { border-top: 1px solid var(--line); }
@@ -765,51 +798,75 @@
         <p class="mt-5 max-w-xl text-neutral-400" data-i18n="price.sub">Start free. Upgrade when voice becomes your main keyboard.</p>
       </div>
 
-      <div class="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div class="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <!-- Free -->
-        <div class="glass card flex flex-col p-8">
+        <div class="glass card flex flex-col p-7">
           <h3 class="text-lg font-semibold tracking-tight" data-i18n="free.name">Free</h3>
           <p class="mt-1 text-sm text-neutral-500" data-i18n="free.desc">For trying it out and light use.</p>
           <div class="mt-8 flex items-baseline gap-2">
-            <span class="text-6xl font-semibold tracking-tight">$0</span>
+            <span class="text-5xl font-semibold tracking-tight">$0</span>
             <span class="mono text-xs text-neutral-500" data-i18n="free.per">/ forever</span>
           </div>
-          <ul class="mt-8 flex-1 space-y-3.5 border-t border-white/10 pt-7 text-sm text-neutral-300">
-            <li class="flex gap-3"><svg class="mt-0.5 shrink-0 text-neutral-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f1">Basic voice-to-field extraction</span></li>
+          <p class="mono mt-3 text-xs text-transparent select-none" aria-hidden="true">&nbsp;</p>
+          <ul class="mt-6 flex-1 space-y-3.5 border-t border-white/10 pt-7 text-sm text-neutral-300">
             <li class="flex gap-3"><svg class="mt-0.5 shrink-0 text-neutral-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f2">60 minutes / month · max 1 minute per recording</span></li>
-            <li class="flex gap-3"><svg class="mt-0.5 shrink-0 text-neutral-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f3">Czech, English &amp; Russian support</span></li>
-            <li class="flex gap-3"><svg class="mt-0.5 shrink-0 text-neutral-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f4">Standard processing speed</span></li>
+              <li class="flex gap-3"><svg class="mt-0.5 shrink-0 text-neutral-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f1">Basic voice-to-field extraction</span></li>
+              <li class="flex gap-3"><svg class="mt-0.5 shrink-0 text-neutral-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f3">Czech, English &amp; Russian support</span></li>
+              <li class="flex gap-3"><svg class="mt-0.5 shrink-0 text-neutral-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="free.f4">Standard processing speed</span></li>
           </ul>
-          <a href="#download" class="btn btn-ghost mt-10 w-full" data-i18n="free.cta">Get started free</a>
+          <a href="#download" class="btn btn-ghost mt-10 w-full" data-download data-auto-platform data-i18n="free.cta">Get started free</a>
+        </div>
+
+        <!-- Plus (most popular) -->
+        <div class="relative">
+          <i class="cm" aria-hidden="true"></i>
+          <div class="glass card-pro flex h-full flex-col p-7">
+            <span class="mono absolute -top-3 left-7 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-black" data-i18n="plus.badge">Most Popular</span>
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-lg font-semibold tracking-tight">Plus</h3>
+              <span class="mono rounded-full border border-white/40 bg-white/5 px-2.5 py-1 text-[11px]" data-i18n="plus.discount">−25% first month</span>
+            </div>
+            <p class="mt-1 text-sm text-neutral-400" data-i18n="plus.desc">For daily, unlimited voice work.</p>
+            <div class="mt-8">
+              <div class="flex items-baseline gap-3">
+                <span class="text-5xl font-semibold tracking-tight">$6.74</span>
+                <span class="mono text-lg text-neutral-600 line-through">$8.99</span>
+              </div>
+              <p class="mono mt-3 text-xs text-neutral-400" data-i18n="plus.first">first month · then $8.99 / month</p>
+            </div>
+            <ul class="mt-6 flex-1 space-y-3.5 border-t border-white/15 pt-7 text-sm text-neutral-200">
+              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="plus.f1">Unlimited voice transcription &amp; document filling</span></li>
+              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="plus.f2">Advanced AI customization &amp; custom templates</span></li>
+              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="plus.f3">Priority processing speed</span></li>
+              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="plus.f4">Standard support</span></li>
+            </ul>
+            <button type="button" class="btn mt-10 w-full" data-open-modal="checkout" data-plan="plus" data-i18n="plus.cta">Get Plus</button>
+          </div>
         </div>
 
         <!-- Pro -->
         <div class="relative">
-          <i class="cm" aria-hidden="true"></i>
-          <div class="glass card-pro flex h-full flex-col p-8">
-            <span class="mono absolute -top-3 left-7 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-black" data-i18n="pro.badge">Best for Professionals</span>
+          <div class="glass card flex h-full flex-col p-7">
+            <span class="mono absolute -top-3 left-7 rounded-full border border-white/40 bg-[#0a0a0a] px-3 py-1 text-[11px] font-medium text-neutral-200" data-i18n="pro.badge">For Developers &amp; Power Users</span>
             <div class="flex items-center justify-between gap-3">
               <h3 class="text-lg font-semibold tracking-tight">Pro</h3>
-              <span class="mono rounded-full border border-white/40 bg-white/5 px-2.5 py-1 text-[11px]" data-i18n="pro.discount">−25% first month</span>
+              <span class="mono rounded-full border border-white/25 bg-white/5 px-2.5 py-1 text-[11px]" data-i18n="pro.discount">−25% first month</span>
             </div>
-            <p class="mt-1 text-sm text-neutral-400" data-i18n="pro.desc">For daily, unlimited voice work.</p>
+            <p class="mt-1 text-sm text-neutral-400" data-i18n="pro.desc">Voice coding and the highest priority.</p>
             <div class="mt-8">
               <div class="flex items-baseline gap-3">
-                <span class="text-6xl font-semibold tracking-tight">$7.49</span>
-                <span class="mono text-lg text-neutral-600 line-through">$9.99</span>
+                <span class="text-5xl font-semibold tracking-tight">$11.99</span>
+                <span class="mono text-lg text-neutral-600 line-through">$15.99</span>
               </div>
-              <p class="mono mt-3 text-xs text-neutral-400" data-i18n="pro.first">first month · then $9.99 / month</p>
+              <p class="mono mt-3 text-xs text-neutral-400" data-i18n="pro.first">first month · then $15.99 / month</p>
             </div>
-            <ul class="mt-8 flex-1 space-y-3.5 border-t border-white/15 pt-7 text-sm text-neutral-200">
-              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f1">Unlimited voice transcription</span></li>
-              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f2">Advanced AI customization &amp; custom templates</span></li>
-              <li class="flex gap-3 text-white"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f6">Voice coding — dictate code straight into VS Code and other IDEs</span></li>
-              <li class="flex gap-3 text-white"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f7">Voice-powered math &amp; logic problem solving</span></li>
-              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f3">Priority processing speed</span></li>
-              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f4">Everything in Free</span></li>
-              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f5">Priority support</span></li>
+            <ul class="mt-6 flex-1 space-y-3.5 border-t border-white/15 pt-7 text-sm text-neutral-200">
+              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f1">Everything in Plus</span></li>
+              <li class="flex gap-3 text-white"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f2">Voice coding — dictate code straight into VS Code and other IDEs</span></li>
+              <li class="flex gap-3 text-white"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f3">Voice-powered math &amp; logic problem solving</span></li>
+              <li class="flex gap-3"><svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="pro.f4">Highest priority AI processing &amp; VIP support</span></li>
             </ul>
-            <a href="#download" class="btn mt-10 w-full" data-i18n="pro.cta">Go Pro</a>
+            <button type="button" class="btn btn-ghost mt-10 w-full" data-open-modal="checkout" data-plan="pro" data-i18n="pro.cta">Go Pro</button>
           </div>
         </div>
       </div>
@@ -930,6 +987,64 @@
           <h2 class="text-xl font-semibold tracking-tight" data-i18n="dl.m.done.title">Thank you!</h2>
           <p class="mt-2 text-sm leading-relaxed text-neutral-400" data-i18n="dl.m.done.text">Your email has been added to the beta waitlist.</p>
           <button id="dl-done-btn" type="button" data-close-modal class="btn btn-ghost mt-6 w-full" data-i18n="modal.done">Done</button>
+        </div>
+      </section>
+
+      <!-- Plan checkout -->
+      <section id="modal-checkout" class="modal-panel checkout" role="dialog" aria-modal="true" aria-labelledby="co-title" tabindex="-1">
+        <i class="cm" aria-hidden="true"></i>
+        <button type="button" class="modal-x" data-close-modal aria-label="Close" data-i18n-aria="modal.close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+
+        <div id="co-stage-form">
+          <h2 id="co-title" class="pr-8 text-xl font-semibold tracking-tight" data-i18n="co.title">Choose your plan</h2>
+          <p class="mt-1.5 text-sm text-neutral-400" data-i18n="co.sub">Pick a plan and a billing cycle. Prices are in USD.</p>
+
+          <form id="co-form" novalidate class="mt-5">
+            <fieldset class="seg">
+              <legend class="sr-only" data-i18n="co.plan">Plan</legend>
+              <label class="seg-opt"><input type="radio" name="co-plan" value="plus" class="sr-only" /><span class="seg-face">Plus</span></label>
+              <label class="seg-opt"><input type="radio" name="co-plan" value="pro" class="sr-only" /><span class="seg-face">Pro</span></label>
+            </fieldset>
+            <p id="co-plan-desc" class="mono mt-2.5 min-h-[2.4rem] text-xs leading-relaxed text-neutral-500" aria-live="polite"></p>
+
+            <fieldset class="mt-3 space-y-2.5" style="margin-left:0;padding:0;border:0;min-width:0">
+              <legend class="sr-only" data-i18n="co.cycle">Billing cycle</legend>
+              <label class="cyc"><input type="radio" name="co-cycle" value="monthly" class="sr-only" />
+                <span class="cyc-card"><i class="cyc-dot" aria-hidden="true"></i>
+                  <span class="cyc-main"><span class="cyc-name"><span data-i18n="co.m.name">Monthly</span><span class="pill-sm">−25%</span></span><span class="cyc-note" id="cy-m-note"></span></span>
+                  <span class="cyc-price"><b id="cy-m-price"></b><small id="cy-m-small"></small></span></span></label>
+              <label class="cyc"><input type="radio" name="co-cycle" value="six" class="sr-only" />
+                <span class="cyc-card"><i class="cyc-dot" aria-hidden="true"></i>
+                  <span class="cyc-main"><span class="cyc-name"><span data-i18n="co.6.name">6 months</span><span class="pill-sm">−15%</span></span><span class="cyc-note" id="cy-6-note"></span></span>
+                  <span class="cyc-price"><b id="cy-6-price"></b><small id="cy-6-small"></small></span></span></label>
+              <label class="cyc"><input type="radio" name="co-cycle" value="year" class="sr-only" />
+                <span class="cyc-card"><i class="cyc-dot" aria-hidden="true"></i>
+                  <span class="cyc-main"><span class="cyc-name"><span data-i18n="co.y.name">Annual</span><span class="pill-sm">−30%</span><span class="pill-sm best" data-i18n="co.best">Best Value</span></span><span class="cyc-note" id="cy-y-note"></span></span>
+                  <span class="cyc-price"><b id="cy-y-price"></b><small id="cy-y-small"></small></span></span></label>
+            </fieldset>
+
+            <div class="sum" aria-live="polite">
+              <div class="sum-row"><span data-i18n="co.sum.plan">Plan</span><b id="sum-plan"></b></div>
+              <div class="sum-row"><span data-i18n="co.sum.save">You save</span><b id="sum-save"></b></div>
+              <div class="sum-row sum-total"><span data-i18n="co.sum.due">Due today</span><b id="sum-total"></b></div>
+              <p class="sum-note" id="sum-note"></p>
+            </div>
+
+            <div class="mt-4 space-y-3">
+              <label for="co-email" class="sr-only" data-i18n="co.email">Email address</label>
+              <input id="co-email" type="email" autocomplete="email" class="field" placeholder="you@example.com" data-i18n-placeholder="co.placeholder" />
+              <p id="co-error" class="text-xs text-neutral-300" role="alert" hidden></p>
+              <button type="submit" class="btn w-full disabled:opacity-60" data-i18n="co.submit">Continue to Checkout</button>
+            </div>
+            <p class="mono mt-3 text-center text-[11px] leading-relaxed text-neutral-600" data-i18n="co.fine">Pre-release: no payment is taken yet. We’ll email you a checkout link when billing opens.</p>
+          </form>
+        </div>
+
+        <div id="co-stage-done" hidden class="text-center">
+          <span class="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full border border-white/70" style="box-shadow:0 0 24px rgba(255,255,255,.2)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <h2 class="text-xl font-semibold tracking-tight" data-i18n="co.done.title">Thank you!</h2>
+          <p id="co-done-text" class="mt-2 text-sm leading-relaxed text-neutral-400"></p>
+          <button id="co-done-btn" type="button" data-close-modal class="btn btn-ghost mt-6 w-full" data-i18n="modal.done">Done</button>
         </div>
       </section>
 
@@ -1070,7 +1185,7 @@
         'faq.q3': 'Do I need to switch languages manually?',
         'faq.a3': 'No. Veloce Voice detects Czech, English and Russian automatically in real time, even when you change language in the middle of a sentence. There is no language menu to set before you speak.',
         'faq.q4': 'What are the exact limits of the Free plan?',
-        'faq.a4': 'Free includes 60 minutes of voice per month, with up to 1 minute per single recording. No credit card is required. Pro removes these limits with unlimited transcription.',
+        'faq.a4': 'Free includes 60 minutes of voice per month, with up to 1 minute per single recording. No credit card is required. Plus and Pro remove these limits with unlimited transcription.',
         'faq.q5': 'What is Voice Coding in the Pro plan?',
         'faq.a5': 'Voice Coding lets you dictate logic and code syntax straight into IDEs such as VS Code: describe a function out loud and get properly formatted code at your cursor. Pro also includes voice-powered math and logic problem solving.',
         'faq.q6': 'Is my voice data private and secure?',
@@ -1126,7 +1241,7 @@
         's3.desc': 'Release the key — the data is typed into your document, form or table. Review, adjust, move on.',
 
         'price.label': 'Pricing',
-        'price.title': 'Simple. Fair. Two plans.',
+        'price.title': 'Simple. Fair. Three plans.',
         'price.sub': 'Start free. Upgrade when voice becomes your main keyboard.',
         'free.name': 'Free',
         'free.desc': 'For trying it out and light use.',
@@ -1136,18 +1251,51 @@
         'free.f3': 'Czech, English & Russian support',
         'free.f4': 'Standard processing speed',
         'free.cta': 'Get started free',
-        'pro.badge': 'Best for Professionals',
-        'pro.desc': 'For daily, unlimited voice work.',
+        'plus.badge': 'Most Popular',
+        'plus.desc': 'For daily, unlimited voice work.',
+        'plus.discount': '−25% first month',
+        'plus.first': 'first month · then $8.99 / month',
+        'plus.f1': 'Unlimited voice transcription & document filling',
+        'plus.f2': 'Advanced AI customization & custom templates',
+        'plus.f3': 'Priority processing speed',
+        'plus.f4': 'Standard support',
+        'plus.cta': 'Get Plus',
+        'pro.badge': 'For Developers & Power Users',
+        'pro.desc': 'Voice coding and the highest priority.',
         'pro.discount': '−25% first month',
-        'pro.first': 'first month · then $9.99 / month',
-        'pro.f6': 'Voice coding — dictate code straight into VS Code and other IDEs',
-        'pro.f7': 'Voice-powered math & logic problem solving',
-        'pro.f1': 'Unlimited voice transcription',
-        'pro.f2': 'Advanced AI customization & custom templates',
-        'pro.f3': 'Priority processing speed',
-        'pro.f4': 'Everything in Free',
-        'pro.f5': 'Priority support',
+        'pro.first': 'first month · then $15.99 / month',
+        'pro.f1': 'Everything in Plus',
+        'pro.f2': 'Voice coding — dictate code straight into VS Code and other IDEs',
+        'pro.f3': 'Voice-powered math & logic problem solving',
+        'pro.f4': 'Highest priority AI processing & VIP support',
         'pro.cta': 'Go Pro',
+        'co.title': 'Choose your plan',
+        'co.sub': 'Pick a plan and a billing cycle. Prices are in USD.',
+        'co.plan': 'Plan',
+        'co.cycle': 'Billing cycle',
+        'co.d.plus': 'Unlimited voice, custom templates and priority speed.',
+        'co.d.pro': 'Everything in Plus, plus voice coding, math & logic and VIP support.',
+        'co.m.name': 'Monthly',
+        'co.m.note': '−25% first-month promo · then {regular} / month',
+        'co.m.small': 'first month',
+        'co.6.name': '6 months',
+        'co.6.note': '{total} billed every 6 months',
+        'co.y.name': 'Annual',
+        'co.y.note': '{total} billed yearly · you save {save}',
+        'co.per': '/ month',
+        'co.best': 'Best Value',
+        'co.sum.plan': 'Plan',
+        'co.sum.save': 'You save',
+        'co.sum.due': 'Due today',
+        'co.n.m': 'Then {regular} / month from the second month.',
+        'co.n.6': 'Billed once every 6 months.',
+        'co.n.y': 'Billed once a year.',
+        'co.email': 'Email address',
+        'co.placeholder': 'you@example.com',
+        'co.submit': 'Continue to Checkout',
+        'co.fine': 'Pre-release: no payment is taken yet. We’ll email you a checkout link when billing opens.',
+        'co.done.title': 'Thank you!',
+        'co.done.text': 'We’ve noted {plan} · {cycle} for {email}. We’ll send a checkout link to that address when billing opens. No payment has been taken.',
 
         'dl.title': 'Put your keyboard<br />on a break.',
         'dl.sub': 'Download Veloce Voice for Windows or macOS and fill your first document with your voice in under a minute.',
@@ -1260,7 +1408,7 @@
         'faq.q3': 'Musím přepínat jazyky ručně?',
         'faq.a3': 'Ne. Veloce Voice automaticky rozpozná češtinu, angličtinu a ruštinu v reálném čase, i když jazyk změníte uprostřed věty. Před mluvením nemusíte nic nastavovat.',
         'faq.q4': 'Jaké jsou přesné limity tarifu Zdarma?',
-        'faq.a4': 'Tarif Zdarma zahrnuje 60 minut hlasu měsíčně, nejvýše 1 minutu na jednu nahrávku. Nevyžaduje platební kartu. Tarif Pro tyto limity ruší a nabízí neomezený přepis.',
+        'faq.a4': 'Tarif Zdarma zahrnuje 60 minut hlasu měsíčně, nejvýše 1 minutu na jednu nahrávku. Nevyžaduje platební kartu. Tarify Plus a Pro tyto limity ruší a nabízejí neomezený přepis.',
         'faq.q5': 'Co je hlasové programování v tarifu Pro?',
         'faq.a5': 'Hlasové programování vám umožňuje diktovat logiku a syntaxi kódu přímo do IDE, například VS Code: popište funkci nahlas a na kurzoru se objeví správně formátovaný kód. Pro zahrnuje také hlasové řešení matematických a logických úloh.',
         'faq.q6': 'Jsou moje hlasová data soukromá a v bezpečí?',
@@ -1316,7 +1464,7 @@
         's3.desc': 'Pusťte klávesu — data se vloží do dokumentu, formuláře nebo tabulky. Zkontrolujte, upravte a pokračujte.',
 
         'price.label': 'Ceník',
-        'price.title': 'Jednoduše. Férově. Dva tarify.',
+        'price.title': 'Jednoduše. Férově. Tři tarify.',
         'price.sub': 'Začněte zdarma. Přejděte na vyšší tarif, až se hlas stane vaší hlavní klávesnicí.',
         'free.name': 'Zdarma',
         'free.desc': 'Na vyzkoušení a občasné použití.',
@@ -1326,18 +1474,51 @@
         'free.f3': 'Podpora češtiny, angličtiny a ruštiny',
         'free.f4': 'Standardní rychlost zpracování',
         'free.cta': 'Začít zdarma',
-        'pro.badge': 'Nejlepší pro profesionály',
-        'pro.desc': 'Pro každodenní neomezenou práci s hlasem.',
+        'plus.badge': 'Nejoblíbenější',
+        'plus.desc': 'Pro každodenní neomezenou práci s hlasem.',
+        'plus.discount': '−25 % první měsíc',
+        'plus.first': 'první měsíc · poté $8.99 / měsíc',
+        'plus.f1': 'Neomezený přepis hlasu a vyplňování dokumentů',
+        'plus.f2': 'Pokročilé přizpůsobení AI a vlastní šablony',
+        'plus.f3': 'Prioritní rychlost zpracování',
+        'plus.f4': 'Standardní podpora',
+        'plus.cta': 'Získat Plus',
+        'pro.badge': 'Pro vývojáře a náročné uživatele',
+        'pro.desc': 'Hlasové programování a nejvyšší priorita.',
         'pro.discount': '−25 % první měsíc',
-        'pro.first': 'první měsíc · poté $9.99 / měsíc',
-        'pro.f6': 'Hlasové programování — diktujte kód přímo do VS Code a dalších IDE',
-        'pro.f7': 'Řešení matematických a logických úloh hlasem',
-        'pro.f1': 'Neomezený přepis hlasu',
-        'pro.f2': 'Pokročilé přizpůsobení AI a vlastní šablony',
-        'pro.f3': 'Prioritní rychlost zpracování',
-        'pro.f4': 'Vše z tarifu Zdarma',
-        'pro.f5': 'Prioritní podpora',
+        'pro.first': 'první měsíc · poté $15.99 / měsíc',
+        'pro.f1': 'Vše z tarifu Plus',
+        'pro.f2': 'Hlasové programování — diktujte kód přímo do VS Code a dalších IDE',
+        'pro.f3': 'Řešení matematických a logických úloh hlasem',
+        'pro.f4': 'Nejvyšší priorita zpracování AI a VIP podpora',
         'pro.cta': 'Přejít na Pro',
+        'co.title': 'Vyberte si tarif',
+        'co.sub': 'Zvolte tarif a fakturační období. Ceny jsou v USD.',
+        'co.plan': 'Tarif',
+        'co.cycle': 'Fakturační období',
+        'co.d.plus': 'Neomezený hlas, vlastní šablony a prioritní rychlost.',
+        'co.d.pro': 'Vše z tarifu Plus a navíc hlasové programování, matematika a logika a VIP podpora.',
+        'co.m.name': 'Měsíčně',
+        'co.m.note': 'Sleva −25 % na první měsíc · poté {regular} / měsíc',
+        'co.m.small': 'první měsíc',
+        'co.6.name': '6 měsíců',
+        'co.6.note': '{total} účtováno každých 6 měsíců',
+        'co.y.name': 'Ročně',
+        'co.y.note': '{total} účtováno ročně · ušetříte {save}',
+        'co.per': '/ měsíc',
+        'co.best': 'Nejlepší hodnota',
+        'co.sum.plan': 'Tarif',
+        'co.sum.save': 'Ušetříte',
+        'co.sum.due': 'K úhradě dnes',
+        'co.n.m': 'Poté {regular} / měsíc od druhého měsíce.',
+        'co.n.6': 'Účtováno jednou za 6 měsíců.',
+        'co.n.y': 'Účtováno jednou ročně.',
+        'co.email': 'E-mailová adresa',
+        'co.placeholder': 'vy@example.com',
+        'co.submit': 'Pokračovat k platbě',
+        'co.fine': 'Předběžná verze: zatím se nic neúčtuje. Až se fakturace spustí, pošleme vám odkaz k platbě e-mailem.',
+        'co.done.title': 'Děkujeme!',
+        'co.done.text': 'Zaznamenali jsme {plan} · {cycle} pro {email}. Až se fakturace spustí, pošleme na tuto adresu odkaz k platbě. Zatím nebyla provedena žádná platba.',
 
         'dl.title': 'Dopřejte své klávesnici<br />pauzu.',
         'dl.sub': 'Stáhněte si Veloce Voice pro Windows nebo macOS a vyplňte svůj první dokument hlasem za méně než minutu.',
@@ -1450,7 +1631,7 @@
         'faq.q3': 'Нужно ли переключать язык вручную?',
         'faq.a3': 'Нет. Veloce Voice автоматически распознаёт чешский, английский и русский в реальном времени, даже если вы меняете язык посреди предложения. Ничего настраивать перед записью не нужно.',
         'faq.q4': 'Каковы точные ограничения бесплатного тарифа?',
-        'faq.a4': 'Бесплатный тариф включает 60 минут голоса в месяц, до 1 минуты на одну запись. Банковская карта не требуется. Тариф Pro снимает эти ограничения и даёт неограниченную расшифровку.',
+        'faq.a4': 'Бесплатный тариф включает 60 минут голоса в месяц, до 1 минуты на одну запись. Банковская карта не требуется. Тарифы Plus и Pro снимают эти ограничения и дают неограниченную расшифровку.',
         'faq.q5': 'Что такое голосовое программирование в тарифе Pro?',
         'faq.a5': 'Голосовое программирование позволяет диктовать логику и синтаксис кода прямо в IDE, например в VS Code: опишите функцию вслух, и в месте курсора появится правильно отформатированный код. В Pro также входит решение математических и логических задач голосом.',
         'faq.q6': 'Мои голосовые данные в безопасности и конфиденциальны?',
@@ -1506,7 +1687,7 @@
         's3.desc': 'Отпустите клавишу — данные вставятся в документ, форму или таблицу. Проверьте, поправьте и работайте дальше.',
 
         'price.label': 'Цены',
-        'price.title': 'Просто. Честно. Два тарифа.',
+        'price.title': 'Просто. Честно. Три тарифа.',
         'price.sub': 'Начните бесплатно. Переходите на Pro, когда голос станет вашей главной клавиатурой.',
         'free.name': 'Бесплатный',
         'free.desc': 'Для знакомства и лёгкого использования.',
@@ -1516,18 +1697,51 @@
         'free.f3': 'Поддержка чешского, английского и русского',
         'free.f4': 'Стандартная скорость обработки',
         'free.cta': 'Начать бесплатно',
-        'pro.badge': 'Лучший выбор для профессионалов',
-        'pro.desc': 'Для ежедневной работы голосом без ограничений.',
+        'plus.badge': 'Самый популярный',
+        'plus.desc': 'Для ежедневной работы голосом без ограничений.',
+        'plus.discount': '−25% на первый месяц',
+        'plus.first': 'первый месяц · затем $8.99 / месяц',
+        'plus.f1': 'Неограниченная расшифровка голоса и заполнение документов',
+        'plus.f2': 'Расширенная настройка ИИ и собственные шаблоны',
+        'plus.f3': 'Приоритетная скорость обработки',
+        'plus.f4': 'Стандартная поддержка',
+        'plus.cta': 'Получить Plus',
+        'pro.badge': 'Для разработчиков и профи',
+        'pro.desc': 'Голосовое программирование и наивысший приоритет.',
         'pro.discount': '−25% на первый месяц',
-        'pro.first': 'первый месяц · затем $9.99 / месяц',
-        'pro.f6': 'Голосовое программирование — диктуйте код прямо в VS Code и другие IDE',
-        'pro.f7': 'Решение математических и логических задач голосом',
-        'pro.f1': 'Неограниченная транскрипция голоса',
-        'pro.f2': 'Расширенная настройка ИИ и собственные шаблоны',
-        'pro.f3': 'Приоритетная скорость обработки',
-        'pro.f4': 'Всё из бесплатного тарифа',
-        'pro.f5': 'Приоритетная поддержка',
+        'pro.first': 'первый месяц · затем $15.99 / месяц',
+        'pro.f1': 'Всё из тарифа Plus',
+        'pro.f2': 'Голосовое программирование — диктуйте код прямо в VS Code и другие IDE',
+        'pro.f3': 'Решение математических и логических задач голосом',
+        'pro.f4': 'Наивысший приоритет обработки ИИ и VIP-поддержка',
         'pro.cta': 'Перейти на Pro',
+        'co.title': 'Выберите тариф',
+        'co.sub': 'Выберите тариф и период оплаты. Цены указаны в USD.',
+        'co.plan': 'Тариф',
+        'co.cycle': 'Период оплаты',
+        'co.d.plus': 'Безлимитный голос, свои шаблоны и приоритетная скорость.',
+        'co.d.pro': 'Всё из Plus, а также голосовое программирование, математика и логика и VIP-поддержка.',
+        'co.m.name': 'Ежемесячно',
+        'co.m.note': 'Скидка −25% на первый месяц · затем {regular} / месяц',
+        'co.m.small': 'первый месяц',
+        'co.6.name': '6 месяцев',
+        'co.6.note': '{total} списывается раз в 6 месяцев',
+        'co.y.name': 'Ежегодно',
+        'co.y.note': '{total} списывается раз в год · экономия {save}',
+        'co.per': '/ месяц',
+        'co.best': 'Лучшая цена',
+        'co.sum.plan': 'Тариф',
+        'co.sum.save': 'Вы экономите',
+        'co.sum.due': 'К оплате сегодня',
+        'co.n.m': 'Далее {regular} / месяц со второго месяца.',
+        'co.n.6': 'Оплата один раз в 6 месяцев.',
+        'co.n.y': 'Оплата один раз в год.',
+        'co.email': 'Адрес email',
+        'co.placeholder': 'you@example.com',
+        'co.submit': 'Перейти к оплате',
+        'co.fine': 'Предварительная версия: платёж пока не списывается. Когда оплата откроется, мы пришлём ссылку на email.',
+        'co.done.title': 'Спасибо!',
+        'co.done.text': 'Мы записали {plan} · {cycle} для {email}. Когда оплата откроется, мы отправим ссылку на этот адрес. Платёж пока не списан.',
 
         'dl.title': 'Дайте клавиатуре<br />передохнуть.',
         'dl.sub': 'Скачайте Veloce Voice для Windows или macOS и заполните свой первый документ голосом меньше чем за минуту.',
@@ -1628,6 +1842,7 @@
         b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
       });
       if (window.veloceDemoRender) window.veloceDemoRender();
+      if (window.veloceCheckoutRender) window.veloceCheckoutRender();
     }
 
     function setLang(lang, animate) {
@@ -1857,8 +2072,9 @@
        BETA_ENDPOINT: URL that accepts a JSON POST {email, platform} (Formspree, Netlify, your own API...).
        While it is empty the waitlist form runs in demo mode and sends nothing. */
     const DOWNLOAD_URLS = { win: '', mac: '' };
-    const BETA_ENDPOINT = '';
-    const CONTACT_ENDPOINT = '';   // same idea for the contact form; empty = demo mode (nothing is sent)
+    const BETA_ENDPOINT = 'http://127.0.0.1:8000/api/beta';
+    const CONTACT_ENDPOINT = 'http://127.0.0.1:8000/api/contact';
+// same idea for the contact form; empty = demo mode (nothing is sent)
     const PLATFORMS = {
       win: { file: 'VeloceVoice-Setup.exe', meta: 'v0.1.0 · Windows 10/11 · 64-bit' },
       mac: { file: 'VeloceVoice.dmg',       meta: 'v0.1.0 · macOS 12+ · Apple Silicon & Intel' }
@@ -1935,6 +2151,7 @@
 
       if (name === 'download') startDownload(opts && opts.platform);
       if (name === 'contact') resetContact();
+      if (name === 'checkout') resetCheckout(opts);
 
       void modalRoot.offsetWidth;          // let the browser paint the start state first
       modalRoot.classList.add('show');
@@ -1958,7 +2175,7 @@
     document.querySelectorAll('[data-download]').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        const platform = btn.dataset.platform || 'win';
+        const platform = btn.dataset.platform || (btn.hasAttribute('data-auto-platform') && /Mac/i.test(navigator.platform || navigator.userAgent) ? 'mac' : 'win');
         const url = DOWNLOAD_URLS[platform];
         if (url) {
           const a = document.createElement('a');
@@ -1973,7 +2190,7 @@
     // Open / close handlers (footer links, close buttons, backdrop)
     document.addEventListener('click', (e) => {
       const opener = e.target.closest('[data-open-modal]');
-      if (opener) { e.preventDefault(); openModal(opener.dataset.openModal); return; }
+      if (opener) { e.preventDefault(); openModal(opener.dataset.openModal, { plan: opener.dataset.plan }); return; }
       if (e.target.closest('[data-close-modal]') || e.target.classList.contains('modal-wrap')) closeModal();
     });
 
@@ -2038,6 +2255,87 @@
         }
         showStage('ct-stage-', 'done', ['form', 'done']);
         $('ct-done-btn').focus();
+      } catch (_) {
+        showError(err, 'form.error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+    /* ---------- Plan checkout (Plus / Pro) ----------
+       CHECKOUT_ENDPOINT: URL that accepts a JSON POST {email, plan, cycle, due}. While empty the form runs
+       in demo mode: nothing is sent and no payment is taken; the confirmation screen is shown. */
+const CHECKOUT_ENDPOINT = 'http://127.0.0.1:8000/api/checkout';
+    const PLAN_PRICE = { plus: 899, pro: 1599 };           // regular monthly price, in cents
+    const PLAN_LABEL = { plus: 'Plus', pro: 'Pro' };
+    const CYCLES = ['monthly', 'six', 'year'];
+    const CY_KEY = { monthly: 'm', six: '6', year: 'y' };
+    const co = { plan: 'plus', cycle: 'monthly', done: null };
+    const money = (c) => '$' + (c / 100).toFixed(2);
+    const fill = (str, v) => str.replace(/\{(\w+)\}/g, (_, k) => (v[k] !== undefined ? v[k] : ''));
+
+    function quote(plan, cycle) {
+      const base = PLAN_PRICE[plan];
+      if (cycle === 'monthly') { const due = Math.round(base * 0.75); return { due, per: due, save: base - due }; }
+      if (cycle === 'six')     { const due = Math.round(base * 6 * 0.85);  return { due, per: Math.round(base * 0.85), save: base * 6 - due }; }
+      const due = Math.round(base * 12 * 0.7);                  return { due, per: Math.round(base * 0.7),  save: base * 12 - due };
+    }
+
+    function renderCheckout() {
+      const base = PLAN_PRICE[co.plan];
+      document.querySelectorAll('input[name="co-plan"]').forEach((r) => { r.checked = (r.value === co.plan); });
+      document.querySelectorAll('input[name="co-cycle"]').forEach((r) => { r.checked = (r.value === co.cycle); });
+      $('co-plan-desc').textContent = t('co.d.' + co.plan);
+      CYCLES.forEach((c) => {
+        const q = quote(co.plan, c), k = CY_KEY[c];
+        $('cy-' + k + '-price').textContent = money(q.per);
+        $('cy-' + k + '-small').textContent = c === 'monthly' ? t('co.m.small') : t('co.per');
+        $('cy-' + k + '-note').textContent = fill(t('co.' + k + '.note'), { regular: money(base), total: money(q.due), save: money(q.save) });
+      });
+      const q = quote(co.plan, co.cycle), k = CY_KEY[co.cycle];
+      $('sum-plan').textContent = PLAN_LABEL[co.plan] + ' · ' + t('co.' + k + '.name');
+      $('sum-save').textContent = money(q.save);
+      $('sum-total').textContent = money(q.due);
+      $('sum-note').textContent = fill(t('co.n.' + k), { regular: money(base) });
+      if (co.done) {
+        $('co-done-text').textContent = fill(t('co.done.text'), { plan: PLAN_LABEL[co.done.plan], cycle: t('co.' + CY_KEY[co.done.cycle] + '.name'), email: co.done.email });
+      }
+    }
+
+    function resetCheckout(opts) {
+      co.plan = (opts && PLAN_PRICE[opts.plan]) ? opts.plan : 'plus';
+      co.cycle = 'monthly';
+      co.done = null;
+      $('co-form').reset();
+      $('co-error').hidden = true;
+      showStage('co-stage-', 'form', ['form', 'done']);
+      renderCheckout();
+    }
+
+    document.querySelectorAll('input[name="co-plan"]').forEach((r) => r.addEventListener('change', () => { co.plan = r.value; renderCheckout(); }));
+    document.querySelectorAll('input[name="co-cycle"]').forEach((r) => r.addEventListener('change', () => { co.cycle = r.value; renderCheckout(); }));
+    window.veloceCheckoutRender = renderCheckout;
+
+    $('co-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.currentTarget.querySelector('[type="submit"]'), input = $('co-email'), err = $('co-error');
+      const email = input.value.trim();
+      if (!EMAIL_RE.test(email)) { showError(err, 'form.invalid'); input.focus(); return; }
+      err.hidden = true;
+      btn.disabled = true;
+      try {
+        const q = quote(co.plan, co.cycle);
+        if (CHECKOUT_ENDPOINT) {
+          const res = await fetch(CHECKOUT_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ email, plan: co.plan, cycle: co.cycle, due: q.due / 100 })
+          });
+          if (!res.ok) throw new Error('bad status');
+        }
+        co.done = { plan: co.plan, cycle: co.cycle, email };
+        renderCheckout();
+        showStage('co-stage-', 'done', ['form', 'done']);
+        $('co-done-btn').focus();
       } catch (_) {
         showError(err, 'form.error');
       } finally {
