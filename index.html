@@ -287,6 +287,13 @@
     .icon-btn { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border: 1px solid var(--line-hi); border-radius: 9px; background: var(--glass); color: var(--dim);
       transition: color .2s ease, border-color .2s ease, background .2s ease; }
     .icon-btn:hover { color: #fff; border-color: rgba(255,255,255,.4); }
+    .bell { position: relative; }
+    .bell[hidden] { display: none; }
+    .bell-badge { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 999px; background: #fff; color: #050505; font: 700 10px/17px 'JetBrains Mono', ui-monospace, monospace; text-align: center; box-shadow: 0 0 0 2px #050505, 0 0 14px rgba(255,255,255,.55); pointer-events: none; }
+    .bell-badge[hidden] { display: none; }
+    .bell.has-new svg { animation: bellring 2.8s ease-in-out infinite; transform-origin: 50% 0; }
+    @keyframes bellring { 0%, 86%, 100% { transform: rotate(0); } 89% { transform: rotate(14deg); } 92% { transform: rotate(-12deg); } 95% { transform: rotate(8deg); } 98% { transform: rotate(-4deg); } }
+    @media (prefers-reduced-motion: reduce) { .bell.has-new svg { animation: none; } }
     .i-moon { display: none; } html[data-theme="light"] .i-sun { display: none; } html[data-theme="light"] .i-moon { display: block; }
     .avatar { display: inline-grid; place-items: center; flex: none; width: var(--s, 28px); height: var(--s, 28px); border-radius: 50%; overflow: hidden;
       background: #fff; color: #0a0a0a; border: 1px solid rgba(255,255,255,.35); font-size: calc(var(--s, 28px) * .42); font-weight: 600; line-height: 1; text-transform: uppercase; }
@@ -424,9 +431,6 @@
       .amb { transform: none; }
     }
   </style>
-    <script>
-    window.VELOCE_API_BASE = 'https://veloce-voice-api.onrender.com';
-  </script>
 </head>
 <body>
   <div class="bg-glow" aria-hidden="true"></div>
@@ -479,6 +483,10 @@
         <button type="button" id="theme-btn" class="icon-btn" aria-label="Switch to light theme">
           <svg class="i-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
           <svg class="i-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button type="button" id="hdr-bell" class="icon-btn bell" aria-haspopup="dialog" aria-label="Notifications" data-i18n-aria="notif.label" hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span id="hdr-bell-badge" class="bell-badge" hidden aria-hidden="true">0</span>
         </button>
         <button type="button" id="hdr-user" class="btn btn-sm btn-ghost" aria-haspopup="dialog" aria-label="Sign in">
           <svg id="hdr-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
@@ -1125,6 +1133,10 @@
             <label for="au-email" class="mono mb-1.5 block text-xs text-neutral-500" data-i18n="auth.email">Email address</label>
             <input id="au-email" type="email" autocomplete="email" class="field" placeholder="you@example.com" data-i18n-placeholder="co.placeholder" />
           </div>
+          <div id="au-f-code" hidden>
+            <label for="au-code" class="mono mb-1.5 block text-xs text-neutral-500" data-i18n="auth.code">Confirmation code</label>
+            <input id="au-code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" class="field mono tracking-[.35em]" placeholder="" data-i18n-placeholder="auth.code.ph" />
+          </div>
           <div id="au-f-pass">
             <label id="au-pass-label" for="au-pass" class="mono mb-1.5 block text-xs text-neutral-500" data-i18n="auth.password">Password</label>
             <input id="au-pass" type="password" autocomplete="current-password" class="field" placeholder="" data-i18n-placeholder="auth.password.ph" />
@@ -1135,6 +1147,7 @@
         </form>
         <div class="mt-4 text-center">
           <button type="button" id="au-forgot" class="faq-link" data-i18n="auth.forgot">Forgot your password?</button>
+          <button type="button" id="au-resend" class="faq-link" style="margin-right:18px" data-i18n="auth.resend" hidden>Send a new code</button>
           <button type="button" id="au-back" class="faq-link" data-i18n="auth.back" hidden>Back to sign in</button>
         </div>
       </section>
@@ -1497,7 +1510,7 @@
         'auth.title.reset': 'Reset your password',
         'auth.sub.login': 'Sign in to manage your plan, usage and support requests.',
         'auth.sub.register': 'Free to start — 60 minutes of voice every month.',
-        'auth.sub.reset': 'Enter your email and choose a new password.',
+        'auth.sub.reset': 'Enter your account email. A 6-digit confirmation code will be sent to the administrator in Telegram.',
         'auth.nickname': 'Nickname',
         'auth.nickname.ph': 'How should we call you?',
         'auth.email': 'Email address',
@@ -1505,7 +1518,7 @@
         'auth.password.ph': 'At least 6 characters',
         'auth.submit.login': 'Sign in',
         'auth.submit.register': 'Create account',
-        'auth.submit.reset': 'Set new password',
+        'auth.submit.reset': 'Send code',
         'auth.forgot': 'Forgot your password?',
         'auth.back': 'Back to sign in',
         'auth.err.nickname': 'Nickname must be 2–40 characters.',
@@ -1517,6 +1530,17 @@
         'auth.err.config': 'The server address is not configured yet.',
         'auth.expired': 'Your session has expired. Please sign in again.',
         'auth.reset.done': 'Password updated. You can now sign in.',
+        'auth.title.reset2': 'Enter the code',
+        'auth.sub.reset2': 'The code was sent to the administrator in Telegram. Enter the 6-digit code you received and choose a new password.',
+        'auth.submit.reset2': 'Set new password',
+        'auth.code': 'Confirmation code',
+        'auth.code.ph': '6-digit code',
+        'auth.reset.sent': 'Confirmation code sent to the administrator in Telegram. Enter it below.',
+        'auth.resend': 'Send a new code',
+        'auth.err.code': 'Enter the 6-digit code.',
+        'auth.err.badcode': 'Invalid or expired confirmation code.',
+        'notif.label': 'Notifications',
+        'notif.unread': 'Notifications: {n} new from support',
         'acc.tabs': 'Account sections',
         'acc.tab.overview': 'Overview',
         'acc.tab.settings': 'Settings',
@@ -1802,7 +1826,7 @@
         'auth.title.reset': 'Obnovení hesla',
         'auth.sub.login': 'Přihlaste se a spravujte svůj tarif, využití a žádosti o podporu.',
         'auth.sub.register': 'Začněte zdarma — 60 minut hlasu každý měsíc.',
-        'auth.sub.reset': 'Zadejte svůj e-mail a zvolte nové heslo.',
+        'auth.sub.reset': 'Zadejte e-mail svého účtu. Šestimístný potvrzovací kód bude odeslán administrátorovi do Telegramu.',
         'auth.nickname': 'Přezdívka',
         'auth.nickname.ph': 'Jak vám máme říkat?',
         'auth.email': 'E-mailová adresa',
@@ -1810,7 +1834,7 @@
         'auth.password.ph': 'Alespoň 6 znaků',
         'auth.submit.login': 'Přihlásit se',
         'auth.submit.register': 'Vytvořit účet',
-        'auth.submit.reset': 'Nastavit nové heslo',
+        'auth.submit.reset': 'Odeslat kód',
         'auth.forgot': 'Zapomněli jste heslo?',
         'auth.back': 'Zpět na přihlášení',
         'auth.err.nickname': 'Přezdívka musí mít 2–40 znaků.',
@@ -1822,6 +1846,17 @@
         'auth.err.config': 'Adresa serveru zatím není nastavena.',
         'auth.expired': 'Platnost relace vypršela. Přihlaste se prosím znovu.',
         'auth.reset.done': 'Heslo bylo změněno. Nyní se můžete přihlásit.',
+        'auth.title.reset2': 'Zadejte kód',
+        'auth.sub.reset2': 'Kód byl odeslán administrátorovi do Telegramu. Zadejte šestimístný kód, který jste obdrželi, a zvolte nové heslo.',
+        'auth.submit.reset2': 'Nastavit nové heslo',
+        'auth.code': 'Potvrzovací kód',
+        'auth.code.ph': '6místný kód',
+        'auth.reset.sent': 'Potvrzovací kód byl odeslán administrátorovi do Telegramu. Zadejte jej níže.',
+        'auth.resend': 'Odeslat nový kód',
+        'auth.err.code': 'Zadejte 6místný kód.',
+        'auth.err.badcode': 'Neplatný nebo prošlý potvrzovací kód.',
+        'notif.label': 'Oznámení',
+        'notif.unread': 'Oznámení: {n} nových od podpory',
         'acc.tabs': 'Sekce účtu',
         'acc.tab.overview': 'Přehled',
         'acc.tab.settings': 'Nastavení',
@@ -2107,7 +2142,7 @@
         'auth.title.reset': 'Восстановление пароля',
         'auth.sub.login': 'Войдите, чтобы управлять тарифом, лимитами и обращениями в поддержку.',
         'auth.sub.register': 'Начните бесплатно — 60 минут голоса каждый месяц.',
-        'auth.sub.reset': 'Введите email и задайте новый пароль.',
+        'auth.sub.reset': 'Введите email аккаунта. 6-значный код подтверждения будет отправлен администратору в Telegram.',
         'auth.nickname': 'Никнейм',
         'auth.nickname.ph': 'Как к вам обращаться?',
         'auth.email': 'Адрес email',
@@ -2115,7 +2150,7 @@
         'auth.password.ph': 'Не менее 6 символов',
         'auth.submit.login': 'Войти',
         'auth.submit.register': 'Создать аккаунт',
-        'auth.submit.reset': 'Установить новый пароль',
+        'auth.submit.reset': 'Отправить код',
         'auth.forgot': 'Забыли пароль?',
         'auth.back': 'Назад ко входу',
         'auth.err.nickname': 'Никнейм должен содержать от 2 до 40 символов.',
@@ -2127,6 +2162,17 @@
         'auth.err.config': 'Адрес сервера ещё не настроен.',
         'auth.expired': 'Сессия истекла. Пожалуйста, войдите снова.',
         'auth.reset.done': 'Пароль изменён. Теперь вы можете войти.',
+        'auth.title.reset2': 'Введите код',
+        'auth.sub.reset2': 'Код отправлен администратору в Telegram. Введите полученный 6-значный код и задайте новый пароль.',
+        'auth.submit.reset2': 'Установить новый пароль',
+        'auth.code': 'Код подтверждения',
+        'auth.code.ph': '6-значный код',
+        'auth.reset.sent': 'Код подтверждения отправлен администратору в Telegram. Введите его ниже.',
+        'auth.resend': 'Отправить код заново',
+        'auth.err.code': 'Введите 6-значный код.',
+        'auth.err.badcode': 'Неверный или просроченный код подтверждения.',
+        'notif.label': 'Уведомления',
+        'notif.unread': 'Уведомления: {n} нов. от поддержки',
         'acc.tabs': 'Разделы аккаунта',
         'acc.tab.overview': 'Обзор',
         'acc.tab.settings': 'Настройки',
@@ -2798,6 +2844,15 @@
          POST /api/contact {name,email,message}
        The response parsing below is deliberately tolerant (several common field names are accepted). */
     const TOKEN_KEY = 'veloce-voice-token', THEME_KEY = 'veloce-voice-theme';
+    // durable token storage: localStorage first, then sessionStorage, then memory (private mode / blocked storage)
+    const store = (() => {
+      const mem = {};
+      return {
+        get(k) { try { const v = localStorage.getItem(k); if (v != null) return v; } catch (e) {} try { const v = sessionStorage.getItem(k); if (v != null) return v; } catch (e) {} return mem[k] || null; },
+        set(k, v) { mem[k] = v; try { localStorage.setItem(k, v); } catch (e) { try { sessionStorage.setItem(k, v); } catch (e2) {} } },
+        del(k) { delete mem[k]; try { localStorage.removeItem(k); } catch (e) {} try { sessionStorage.removeItem(k); } catch (e) {} }
+      };
+    })();
     const auth = { token: null, user: null, tickets: [], view: 'login' };
     const PLAN_LABELS = { plus: 'Plus', pro: 'Pro' };
     const MIN_PASSWORD = 6;   // same as the backend (pydantic min_length)
@@ -2870,6 +2925,7 @@
       else if (ctx === 'register' && err.status === 409) msg = t('auth.err.exists');
       else if (ctx === 'password' && [400, 403].includes(err.status)) msg = t('set.pass.badold');
       else if (ctx === 'reset' && err.status === 404) msg = t('auth.err.notfound');
+      else if (ctx === 'reset2' && err.status === 400) msg = t('auth.err.badcode');
       else msg = err.detail || t('form.error');
       el.textContent = msg; el.hidden = false;
     }
@@ -2889,7 +2945,8 @@
         until: u.plan_until || u.plan_expires || u.plan_expires_at || u.expires_at || u.valid_until || u.subscription_until || null,
         used: num(u.minutes_used ?? u.used_minutes ?? u.usage_minutes ?? usage.minutes_used ?? usage.used),
         limit: num(u.minutes_limit ?? u.limit_minutes ?? u.minutes_total ?? usage.minutes_limit ?? usage.limit),
-        apiToken: u.api_token || u.apiToken || u.desktop_token || auth.token || ''
+        apiToken: u.api_token || u.apiToken || u.desktop_token || auth.token || '',
+        unread: Math.max(0, Math.floor(Number(u.unread_notifications) || 0))
       };
     }
     function normalizeTickets(raw) {
@@ -2951,15 +3008,29 @@
     }
 
     /* ---------- session ---------- */
-    function saveToken(tok) { auth.token = tok; try { tok ? localStorage.setItem(TOKEN_KEY, tok) : localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+    function saveToken(tok) { auth.token = tok; if (tok) store.set(TOKEN_KEY, tok); else store.del(TOKEN_KEY); }
     function clearSession() { saveToken(null); auth.user = null; auth.tickets = []; renderHeader(); }
     function sessionExpired() { clearSession(); openModal('auth', { view: 'login', note: 'auth.expired' }); }
-    async function loadMe() {
-      const raw = await authed('/api/me');
+    // quiet = background refresh: a 401 signs out silently instead of popping the sign-in window
+    async function loadMe(quiet) {
+      let raw;
+      if (quiet) {
+        try { raw = await api('/api/me', { token: auth.token }); }
+        catch (e) { if (e instanceof ApiError && e.status === 401) clearSession(); throw e; }
+      } else raw = await authed('/api/me');
       auth.user = normalizeUser(raw);
       auth.tickets = normalizeTickets(raw);
       renderHeader();
       return auth.user;
+    }
+    // mark support replies as read (resets the bell badge); safe to call repeatedly
+    let marking = false;
+    async function markRead() {
+      if (!auth.token || !auth.user || !auth.user.unread || marking) return;
+      marking = true;
+      try { await authed('/api/me/mark-read', { method: 'POST' }); if (auth.user) { auth.user.unread = 0; renderHeader(); } }
+      catch (e) { /* the badge stays; it will be retried on the next open */ }
+      finally { marking = false; }
     }
     async function logout() { clearSession(); closeModal(); }
 
@@ -2975,19 +3046,39 @@
         btn.setAttribute('aria-label', t('auth.signin'));
       }
     }
-    $('hdr-user').addEventListener('click', () => openModal(auth.user ? 'account' : 'auth'));
+    function renderBell() {
+      const u = auth.user, bell = $('hdr-bell'), badge = $('hdr-bell-badge'), n = u ? u.unread : 0;
+      bell.hidden = !u;
+      badge.hidden = !(n > 0); badge.textContent = n > 9 ? '9+' : String(n);
+      bell.classList.toggle('has-new', n > 0);
+      bell.setAttribute('aria-label', n > 0 ? fill(t('notif.unread'), { n }) : t('notif.label'));
+    }
+    const baseRenderHeader = renderHeader;
+    renderHeader = function () { baseRenderHeader(); renderBell(); };
+    async function openFromHeader(tab) {
+      // signed in but the profile has not loaded yet (server waking up / offline): try once more
+      if (auth.token && !auth.user) { try { await loadMe(); } catch (e) {} }
+      if (!auth.user) return openModal('auth', auth.token ? { view: 'login', note: 'auth.err.network' } : undefined);
+      openModal('account', tab ? { tab } : undefined);
+    }
+    $('hdr-user').addEventListener('click', () => openFromHeader());
+    $('hdr-bell').addEventListener('click', async () => { await openFromHeader('support'); markRead(); });
 
     /* ---------- auth modal ---------- */
     function paintAuth() {
-      const v = auth.view;
+      const v = auth.view, reset = v === 'reset' || v === 'reset2';
       $('au-title').textContent = t('auth.title.' + v);
       $('au-sub').textContent = t('auth.sub.' + v);
       $('au-submit').textContent = t('auth.submit.' + v);
-      $('au-tabs').hidden = v === 'reset';
+      $('au-tabs').hidden = reset;
       $('au-f-nick').hidden = v !== 'register';
-      $('au-pass-label').textContent = t(v === 'reset' ? 'set.pass.new' : 'auth.password');
+      $('au-f-code').hidden = v !== 'reset2';
+      $('au-f-pass').hidden = v === 'reset';
+      $('au-email').readOnly = v === 'reset2';
+      $('au-pass-label').textContent = t(reset ? 'set.pass.new' : 'auth.password');
       $('au-forgot').hidden = v !== 'login';
-      $('au-back').hidden = v !== 'reset';
+      $('au-back').hidden = !reset;
+      $('au-resend').hidden = v !== 'reset2';
       $('au-pass').setAttribute('autocomplete', v === 'login' ? 'current-password' : 'new-password');
       document.querySelectorAll('[data-au-view]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.auView === v)));
     }
@@ -2999,7 +3090,9 @@
     }
     document.querySelectorAll('[data-au-view]').forEach((b) => b.addEventListener('click', () => setAuthView(b.dataset.auView)));
     $('au-forgot').addEventListener('click', () => { setAuthView('reset'); $('au-email').focus(); });
-    $('au-back').addEventListener('click', () => { setAuthView('login'); $('au-email').focus(); });
+    $('au-back').addEventListener('click', () => { setAuthView('login'); $('au-code').value = ''; $('au-pass').value = ''; $('au-email').focus(); });
+    $('au-resend').addEventListener('click', () => { setAuthView('reset'); $('au-code').value = ''; $('au-pass').value = ''; $('au-email').focus(); });
+    $('au-code').addEventListener('input', () => { const c = $('au-code'), d = c.value.replace(/\D/g, '').slice(0, 6); if (c.value !== d) c.value = d; });
 
     $('au-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -3009,13 +3102,18 @@
       const fail = (key, field) => { err.textContent = t(key); err.hidden = false; $(field).focus(); };
       if (!EMAIL_RE.test(email)) return fail('form.invalid', 'au-email');
       if (v === 'register' && (nick.length < 2 || nick.length > 40)) return fail('auth.err.nickname', 'au-nick');
-      if ((v === 'register' || v === 'reset') && pass.length < MIN_PASSWORD) return fail('auth.err.password', 'au-pass');
+      if (v === 'reset2' && !/^\d{6}$/.test($('au-code').value.trim())) return fail('auth.err.code', 'au-code');
+      if ((v === 'register' || v === 'reset2') && pass.length < MIN_PASSWORD) return fail('auth.err.password', 'au-pass');
       if (v === 'login' && !pass) return fail('auth.err.password', 'au-pass');
       btn.disabled = true;
       try {
         if (v === 'reset') {
-          await api('/api/reset-password', { method: 'POST', body: { email, new_password: pass } });
-          setAuthView('login'); $('au-email').value = email; $('au-pass').value = '';
+          await api('/api/forgot-password', { method: 'POST', body: { email } });
+          setAuthView('reset2'); $('au-email').value = email; $('au-code').value = ''; $('au-pass').value = '';
+          note.textContent = t('auth.reset.sent'); note.hidden = false; $('au-code').focus();
+        } else if (v === 'reset2') {
+          await api('/api/reset-password-code', { method: 'POST', body: { email, code: $('au-code').value.trim(), new_password: pass } });
+          setAuthView('login'); $('au-email').value = email; $('au-pass').value = ''; $('au-code').value = '';
           note.textContent = t('auth.reset.done'); note.hidden = false; $('au-pass').focus();
         } else {
           let data = await api(v === 'login' ? '/api/login' : '/api/register', { method: 'POST', body: v === 'login' ? { email, password: pass } : { email, password: pass, nickname: nick } });
@@ -3030,6 +3128,7 @@
         }
       } catch (ex) {
         if (!(ex instanceof ApiError && ex.status === 401 && v !== 'login')) showApiError(err, ex, v);
+        if (v === 'reset2' && ex instanceof ApiError && ex.status === 400) $('au-code').focus();
         if (auth.token && !auth.user) saveToken(null);
       } finally { btn.disabled = false; }
     });
@@ -3043,7 +3142,7 @@
         $('ac-panel-' + n).hidden = !on;
         if (on && focus) tab.focus();
       });
-      if (name === 'support') loadMe().then(renderAccount).catch(() => {});
+      if (name === 'support') markRead().then(() => loadMe()).then(renderAccount).catch(() => {});
     }
     document.querySelectorAll('[data-ac-tab]').forEach((tab) => {
       tab.addEventListener('click', () => showTab(tab.dataset.acTab));
@@ -3185,14 +3284,28 @@
       if (auth.user) { renderAccount(); $('ac-token-eye').setAttribute('aria-label', t($('ac-token').type === 'text' ? 'acc.hide' : 'acc.show')); buildDefaultAvatars(); renderAccount(); }
     };
 
-    // boot: restore the session
+    // boot: restore the session. The token never expires on its own (the backend only rotates it on a new login),
+    // so a failed restore is retried with back-off (a sleeping free-tier server can take ~1 min) instead of signing out.
+    const RETRY_MS = [1500, 4000, 9000, 20000, 40000];
+    function restoreSession(i) {
+      if (!auth.token) return;
+      loadMe(true).then(() => { if (auth.user.theme && auth.user.theme !== currentTheme()) setTheme(auth.user.theme); })
+        .catch((e) => { if (!(e instanceof ApiError && e.status === 401) && auth.token && i < RETRY_MS.length) setTimeout(() => restoreSession(i + 1), RETRY_MS[i]); });
+    }
+    // keep the bell fresh: refresh while the tab is visible (every 60 s, and when returning to the tab)
+    function pollMe() { if (API_BASE && auth.token && auth.user && !document.hidden) loadMe(true).then(() => { if ($('modal-account').classList.contains('active')) renderAccount(); }).catch(() => {}); }
+    setInterval(pollMe, 60000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) pollMe(); });
+    // several tabs: follow sign-in / sign-out / token rotation made in another tab
+    window.addEventListener('storage', (e) => {
+      if (e.key !== TOKEN_KEY) return;
+      if (e.newValue) { if (e.newValue !== auth.token) { auth.token = e.newValue; restoreSession(0); } }
+      else if (auth.token) { clearSession(); if ($('modal-account').classList.contains('active')) closeModal(); }
+    });
     (function bootAuth() {
-      let tok = null; try { tok = localStorage.getItem(TOKEN_KEY); } catch (e) {}
+      const tok = store.get(TOKEN_KEY);
       renderThemeUI(); paintAuth(); renderHeader();
-      if (tok && API_BASE) {
-        auth.token = tok;
-        loadMe().then(() => { if (auth.user.theme && auth.user.theme !== currentTheme()) setTheme(auth.user.theme); }).catch((e) => { if (!(e instanceof ApiError && e.status === 401)) auth.token = tok; });
-      }
+      if (tok && API_BASE) { auth.token = tok; restoreSession(0); }
     })();
   </script>
 </body>
