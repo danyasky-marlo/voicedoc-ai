@@ -300,6 +300,56 @@
     .avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
     @media (max-width: 379px) { .logo-text { display: none; } }
     .modal-panel.account { max-width: 38rem; }
+    @media (max-width: 480px) { .modal-panel.account { padding: 1.25rem 1.1rem; } .modal-wrap { padding: .75rem; } }
+    /* tab panels: soft entrance */
+    [role="tabpanel"]:not([hidden]) { animation: tabin .34s cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes tabin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .seg-btn { position: relative; }
+    .seg-btn:active { transform: scale(.97); }
+    /* select */
+    .field.field-select { -webkit-appearance: none; appearance: none; cursor: pointer; padding-right: 2.6rem;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='.7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+      background-repeat: no-repeat; background-position: right .85rem center; transition: border-color .2s, box-shadow .2s, background-color .2s; }
+    .field.field-select:hover { border-color: rgba(255,255,255,.4); background-color: rgba(255,255,255,.05); }
+    .field.field-select option { background: #111; color: #fff; }
+    .field:disabled { opacity: .55; cursor: not-allowed; }
+    /* recording history */
+    .hist-item { padding: .8rem .9rem; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.025);
+      transition: border-color .2s, background .2s, transform .2s; animation: tabin .4s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+    .hist-item:hover { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.045); transform: translateY(-1px); }
+    .chip { display: inline-flex; align-items: center; height: 18px; padding: 0 .4rem; border-radius: 5px; border: 1px solid var(--line-hi); font: 600 .625rem/1 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .04em; color: var(--dim); text-transform: uppercase; }
+    .chip.ok { color: #0a0a0a; background: #fff; border-color: #fff; }
+    .chip.bad { color: #fff; border-style: dashed; }
+    .hist-text { margin-top: .5rem; font-size: .8125rem; line-height: 1.5; color: #b5b5b5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+    .hist-actions { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .65rem; }
+    .hbtn { display: inline-flex; align-items: center; gap: .4rem; height: 30px; padding: 0 .7rem; border: 1px solid var(--line-hi); border-radius: 8px; font-size: .75rem; font-weight: 600; color: #e5e5e5; background: rgba(255,255,255,.03); transition: background .2s, color .2s, border-color .2s, transform .15s; }
+    .hbtn:hover:not(:disabled) { background: #fff; color: #0a0a0a; border-color: #fff; }
+    .hbtn:active:not(:disabled) { transform: scale(.97); }
+    .hbtn:disabled { opacity: .4; cursor: not-allowed; }
+    .hbtn:focus-visible, .icon-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    .hist-note { padding: 1rem; border: 1px dashed var(--line-hi); border-radius: 11px; font-size: .8125rem; line-height: 1.55; color: var(--dim); text-align: center; }
+    .hist-skel { height: 74px; border-radius: 11px; background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,.08), rgba(255,255,255,.03)); background-size: 200% 100%; animation: skel 1.3s ease-in-out infinite; }
+    @keyframes skel { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+    .spin svg { animation: spin .8s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } }
+    /* toasts */
+    .toasts { position: fixed; top: max(14px, env(safe-area-inset-top)); right: 14px; z-index: 90; display: flex; flex-direction: column; gap: 10px; width: min(360px, calc(100vw - 28px)); pointer-events: none; }
+    .toast { position: relative; overflow: hidden; pointer-events: auto; display: flex; align-items: center; gap: .75rem; padding: .8rem .85rem .8rem .8rem; border-radius: 12px;
+      background: rgba(14,14,14,.82); border: 1px solid rgba(255,255,255,.14); color: #fff; font-size: .8125rem; line-height: 1.35;
+      -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
+      box-shadow: 0 20px 50px -18px #000, 0 0 30px rgba(255,255,255,.06), inset 0 1px 0 rgba(255,255,255,.1); animation: toastin .42s cubic-bezier(.2,.85,.2,1) both; }
+    .toast.out { animation: toastout .28s ease forwards; }
+    .toast.err { border-color: rgba(255,255,255,.4); }
+    .toast-ico { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 50%; background: #fff; color: #0a0a0a; box-shadow: 0 0 16px rgba(255,255,255,.35); }
+    .toast.err .toast-ico { background: transparent; color: #fff; border: 1.5px solid #fff; box-shadow: none; }
+    .toast-msg { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+    .toast-x { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: var(--mute); transition: color .2s, background .2s; }
+    .toast-x:hover { color: #fff; background: rgba(255,255,255,.1); }
+    .toast::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: rgba(255,255,255,.75); transform-origin: left; animation: toastbar var(--d, 3.6s) linear forwards; }
+    .toast:hover::after { animation-play-state: paused; }
+    @keyframes toastin { from { opacity: 0; transform: translateX(28px) scale(.96); } to { opacity: 1; transform: none; } }
+    @keyframes toastout { to { opacity: 0; transform: translateX(28px) scale(.96); } }
+    @keyframes toastbar { to { transform: scaleX(0); } }
+    @media (prefers-reduced-motion: reduce) { .toast, .toast.out, .hist-item, [role="tabpanel"]:not([hidden]) { animation-duration: .01s; animation-delay: 0s; } .toast::after, .spin svg, .hist-skel { animation: none; } }
     .seg.seg3 { grid-template-columns: repeat(3, 1fr); }
     .seg-btn { display: flex; align-items: center; justify-content: center; height: 36px; padding: 0 .5rem; border-radius: 8px; font-size: .8125rem; font-weight: 600; color: var(--dim);
       transition: background .25s ease, color .25s ease, box-shadow .25s ease; }
@@ -431,9 +481,6 @@
       .amb { transform: none; }
     }
   </style>
-    <script>
-    window.VELOCE_API_BASE = 'https://veloce-voice-api.onrender.com';
-  </script>
 </head>
 <body>
   <div class="bg-glow" aria-hidden="true"></div>
@@ -1010,6 +1057,7 @@
   </footer>
 
   <!-- ============ MODALS ============ -->
+  <div id="toasts" class="toasts" role="region" aria-live="polite" aria-label="Notifications" data-i18n-aria="notif.label"></div>
   <div id="modal-root" class="modal-root">
     <div class="modal-overlay" data-close-modal></div>
     <div class="modal-wrap">
@@ -1194,6 +1242,14 @@
             </div>
           </div>
           <a href="#download" id="ac-launch" class="btn w-full" data-download data-auto-platform data-i18n="acc.launch">Launch / Download app</a>
+
+          <section aria-labelledby="hist-title" class="pt-1">
+            <div class="flex items-center justify-between gap-3">
+              <h3 id="hist-title" class="mono text-xs text-neutral-500" data-i18n="hist.title">Recording history</h3>
+              <button type="button" id="hist-refresh" class="icon-btn" style="width:30px;height:30px;border-radius:8px" aria-label="Refresh" data-i18n-aria="hist.refresh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg></button>
+            </div>
+            <div id="hist-list" class="mt-3 space-y-2.5" aria-live="polite"></div>
+          </section>
         </div>
 
         <!-- Settings -->
@@ -1219,6 +1275,17 @@
             <p id="ac-av-msg" class="fmsg" role="status"></p>
           </div>
 
+          <div>
+            <label for="ac-asr" class="mono mb-1.5 block text-xs text-neutral-500" data-i18n="set.asr">Default recognition language</label>
+            <select id="ac-asr" class="field field-select">
+              <option value="auto" data-i18n="set.asr.auto">Auto-detect</option>
+              <option value="cs" data-i18n="set.asr.cs">Czech</option>
+              <option value="en" data-i18n="set.asr.en">English</option>
+              <option value="ru" data-i18n="set.asr.ru">Russian</option>
+            </select>
+            <p class="mt-1.5 text-xs leading-relaxed text-neutral-500" data-i18n="set.asr.hint">Your preferred language for new transcriptions. Saved in this browser.</p>
+          </div>
+
           <div><fieldset style="margin:0;padding:0;border:0;min-width:0">
             <legend class="mono mb-1.5 block text-xs text-neutral-500" data-i18n="set.theme">Theme</legend>
             <div class="seg">
@@ -1236,6 +1303,12 @@
             <button type="submit" class="btn btn-ghost w-full" data-i18n="set.pass.change">Update password</button>
             <p id="ac-pw-msg" class="fmsg" role="status"></p>
           </form>
+
+          <div>
+            <p class="mono mb-1.5 block text-xs text-neutral-500" data-i18n="set.gdpr.title">Privacy and data</p>
+            <p class="mb-3 text-xs leading-relaxed text-neutral-500" data-i18n="set.gdpr.hint">A JSON file with your profile, settings and support requests. It contains your API token, so keep it private.</p>
+            <button type="button" id="ac-gdpr" class="btn btn-ghost w-full" data-i18n="set.gdpr">Download my data (GDPR)</button>
+          </div>
 
           <button type="button" id="ac-logout" class="btn btn-ghost w-full" data-i18n="set.logout">Sign out</button>
         </div>
@@ -1544,6 +1617,35 @@
         'auth.err.badcode': 'Invalid or expired confirmation code.',
         'notif.label': 'Notifications',
         'notif.unread': 'Notifications: {n} new from support',
+        'hist.title': 'Recording history',
+        'hist.refresh': 'Refresh history',
+        'hist.loading': 'Loading history',
+        'hist.empty': 'No recordings yet. Dictations from the desktop app will appear here.',
+        'hist.unavailable': 'Recording history is not available on the server yet.',
+        'hist.error': 'Could not load the history. Try again.',
+        'hist.copy': 'Copy text',
+        'hist.txt': 'Download TXT',
+        'hist.untitled': 'Recording {n}',
+        'hist.status.done': 'Done',
+        'hist.status.processing': 'Processing',
+        'hist.status.failed': 'Failed',
+        'hist.notext': 'No text available',
+        'set.asr': 'Default recognition language',
+        'set.asr.auto': 'Auto-detect',
+        'set.asr.cs': 'Czech',
+        'set.asr.en': 'English',
+        'set.asr.ru': 'Russian',
+        'set.asr.hint': 'Your preferred language for new transcriptions. Saved in this browser.',
+        'set.gdpr.title': 'Privacy and data',
+        'set.gdpr.hint': 'A JSON file with your profile, settings and support requests. It contains your API token, so keep it private.',
+        'set.gdpr': 'Download my data (GDPR)',
+        'toast.saved': 'Settings saved successfully',
+        'toast.copied': 'API key copied',
+        'toast.lang': 'Default language saved',
+        'toast.text': 'Text copied',
+        'toast.txt': 'TXT file downloaded',
+        'toast.gdpr': 'Your data has been downloaded',
+        'toast.copyfail': 'Copy failed',
         'acc.tabs': 'Account sections',
         'acc.tab.overview': 'Overview',
         'acc.tab.settings': 'Settings',
@@ -1860,6 +1962,35 @@
         'auth.err.badcode': 'Neplatný nebo prošlý potvrzovací kód.',
         'notif.label': 'Oznámení',
         'notif.unread': 'Oznámení: {n} nových od podpory',
+        'hist.title': 'Historie nahrávek',
+        'hist.refresh': 'Obnovit historii',
+        'hist.loading': 'Načítání historie',
+        'hist.empty': 'Zatím žádné nahrávky. Diktáty z desktopové aplikace se zobrazí zde.',
+        'hist.unavailable': 'Historie nahrávek zatím není na serveru dostupná.',
+        'hist.error': 'Historii se nepodařilo načíst. Zkuste to znovu.',
+        'hist.copy': 'Kopírovat text',
+        'hist.txt': 'Stáhnout TXT',
+        'hist.untitled': 'Nahrávka {n}',
+        'hist.status.done': 'Hotovo',
+        'hist.status.processing': 'Zpracovává se',
+        'hist.status.failed': 'Chyba',
+        'hist.notext': 'Text není k dispozici',
+        'set.asr': 'Výchozí jazyk rozpoznávání',
+        'set.asr.auto': 'Automatická detekce',
+        'set.asr.cs': 'Čeština',
+        'set.asr.en': 'Angličtina',
+        'set.asr.ru': 'Ruština',
+        'set.asr.hint': 'Preferovaný jazyk pro nové přepisy. Uloženo v tomto prohlížeči.',
+        'set.gdpr.title': 'Soukromí a data',
+        'set.gdpr.hint': 'Soubor JSON s vaším profilem, nastavením a žádostmi o podporu. Obsahuje váš API token, uchovejte jej v soukromí.',
+        'set.gdpr': 'Stáhnout moje data (GDPR)',
+        'toast.saved': 'Nastavení bylo úspěšně uloženo',
+        'toast.copied': 'API klíč zkopírován',
+        'toast.lang': 'Výchozí jazyk uložen',
+        'toast.text': 'Text zkopírován',
+        'toast.txt': 'Soubor TXT stažen',
+        'toast.gdpr': 'Vaše data byla stažena',
+        'toast.copyfail': 'Kopírování se nezdařilo',
         'acc.tabs': 'Sekce účtu',
         'acc.tab.overview': 'Přehled',
         'acc.tab.settings': 'Nastavení',
@@ -2176,6 +2307,35 @@
         'auth.err.badcode': 'Неверный или просроченный код подтверждения.',
         'notif.label': 'Уведомления',
         'notif.unread': 'Уведомления: {n} нов. от поддержки',
+        'hist.title': 'История записей',
+        'hist.refresh': 'Обновить историю',
+        'hist.loading': 'Загрузка истории',
+        'hist.empty': 'Записей пока нет. Здесь появятся диктовки из десктоп-приложения.',
+        'hist.unavailable': 'История записей пока недоступна на сервере.',
+        'hist.error': 'Не удалось загрузить историю. Попробуйте ещё раз.',
+        'hist.copy': 'Копировать текст',
+        'hist.txt': 'Скачать TXT',
+        'hist.untitled': 'Запись {n}',
+        'hist.status.done': 'Готово',
+        'hist.status.processing': 'Обработка',
+        'hist.status.failed': 'Ошибка',
+        'hist.notext': 'Текст недоступен',
+        'set.asr': 'Язык распознавания по умолчанию',
+        'set.asr.auto': 'Автоопределение',
+        'set.asr.cs': 'Чешский',
+        'set.asr.en': 'Английский',
+        'set.asr.ru': 'Русский',
+        'set.asr.hint': 'Предпочитаемый язык для новых расшифровок. Сохраняется в этом браузере.',
+        'set.gdpr.title': 'Конфиденциальность и данные',
+        'set.gdpr.hint': 'JSON-файл с профилем, настройками и обращениями в поддержку. Он содержит ваш API-токен, поэтому храните его в тайне.',
+        'set.gdpr': 'Скачать мои данные (GDPR)',
+        'toast.saved': 'Настройки успешно сохранены',
+        'toast.copied': 'API-ключ скопирован',
+        'toast.lang': 'Язык по умолчанию сохранён',
+        'toast.text': 'Текст скопирован',
+        'toast.txt': 'TXT-файл скачан',
+        'toast.gdpr': 'Ваши данные скачаны',
+        'toast.copyfail': 'Не удалось скопировать',
         'acc.tabs': 'Разделы аккаунта',
         'acc.tab.overview': 'Обзор',
         'acc.tab.settings': 'Настройки',
@@ -3012,7 +3172,7 @@
 
     /* ---------- session ---------- */
     function saveToken(tok) { auth.token = tok; if (tok) store.set(TOKEN_KEY, tok); else store.del(TOKEN_KEY); }
-    function clearSession() { saveToken(null); auth.user = null; auth.tickets = []; renderHeader(); }
+    function clearSession() { saveToken(null); auth.user = null; auth.tickets = []; auth.history = null; renderHeader(); }
     function sessionExpired() { clearSession(); openModal('auth', { view: 'login', note: 'auth.expired' }); }
     // quiet = background refresh: a 401 signs out silently instead of popping the sign-in window
     async function loadMe(quiet) {
@@ -3217,10 +3377,153 @@
       const tok = $('ac-token'); tok.type = 'password';
       $('ac-token-eye').setAttribute('aria-label', t('acc.show'));
       buildDefaultAvatars(); renderAccount(); renderThemeUI();
+      $('ac-asr').value = getAsr(); auth.history = null; histState = 'loading'; renderHistory();
       showTab((opts && opts.tab) || 'overview');
+      loadHistory();
       loadMe().then(renderAccount).catch(() => {});
     }
-    function say(id, text, bad) { const el = $(id); el.textContent = text; el.style.color = bad ? '#fff' : ''; }
+    /* ---------- toasts ---------- */
+    const TOAST_ICONS = {
+      ok: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+      error: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 6v7M12 18h.01"/></svg>'
+    };
+    function toast(text, kind) {
+      const box = $('toasts'), err = kind === 'error', ms = err ? 5200 : 3600;
+      const el = document.createElement('div');
+      el.className = 'toast' + (err ? ' err' : ''); el.setAttribute('role', err ? 'alert' : 'status'); el.style.setProperty('--d', ms + 'ms');
+      const ico = document.createElement('span'); ico.className = 'toast-ico'; ico.innerHTML = TOAST_ICONS[err ? 'error' : 'ok'];
+      const msg = document.createElement('span'); msg.className = 'toast-msg'; msg.textContent = text;
+      const x = document.createElement('button'); x.type = 'button'; x.className = 'toast-x'; x.setAttribute('aria-label', t('modal.close'));
+      x.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+      el.append(ico, msg, x);
+      let timer = 0, left = ms, started = 0, gone = false;
+      const close = () => { if (gone) return; gone = true; clearTimeout(timer); el.classList.add('out'); setTimeout(() => el.remove(), 300); };
+      const run = () => { started = Date.now(); timer = setTimeout(close, left); };
+      el.addEventListener('mouseenter', () => { clearTimeout(timer); left -= Date.now() - started; });
+      el.addEventListener('mouseleave', () => { left = Math.max(left, 1200); run(); });
+      x.addEventListener('click', close);
+      box.appendChild(el);
+      while (box.children.length > 4) box.firstElementChild.remove();
+      run();
+    }
+    // inline text is kept for errors (next to the field); successes become toasts
+    function say(id, text, bad) {
+      const el = $(id);
+      if (bad) { el.textContent = text; el.style.color = '#fff'; }
+      else { el.textContent = ''; el.style.color = ''; toast(text); }
+    }
+    const errMsg = (ex) => ex && ex.kind === 'http' && ex.detail ? ex.detail : t(ex && ex.kind === 'network' ? 'auth.err.network' : ex && ex.kind === 'config' ? 'auth.err.config' : 'form.error');
+
+    async function copyText(text) {
+      try { await navigator.clipboard.writeText(text); return true; } catch (_) {}
+      const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+      document.body.appendChild(ta); ta.select(); let ok = false;
+      try { ok = document.execCommand('copy'); } catch (_) {}
+      ta.remove(); return ok;
+    }
+    function downloadBlob(name, text, type) {
+      const url = URL.createObjectURL(new Blob([text], { type: type + ';charset=utf-8' }));
+      const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }
+
+    /* ---------- recording history ---------- */
+    // GET /api/me/transcriptions is not part of backend v2.2 yet; until it exists the list shows an explanatory empty state.
+    const HISTORY_PATH = '/api/me/transcriptions';
+    let histState = 'loading';
+    function normalizeHistory(raw) {
+      const list = Array.isArray(raw) ? raw : (raw && (raw.items || raw.transcriptions || raw.history || raw.recordings)) || [];
+      const st = (r, text) => { const v = String(r.status || '').toLowerCase(); return /^(done|completed|complete|ready|success|ok)$/.test(v) ? 'done' : /^(failed|error)$/.test(v) ? 'failed' : v ? 'processing' : (text ? 'done' : 'processing'); };
+      return list.map((r, i) => {
+        const text = String(r.text || r.transcript || '');
+        let dur = r.duration_seconds !== undefined ? r.duration_seconds : r.duration;
+        if (typeof dur === 'string' && /^\d+:\d{2}$/.test(dur)) { const [m, s2] = dur.split(':'); dur = +m * 60 + +s2; }
+        dur = num(dur);
+        return { id: r.id !== undefined ? r.id : i, title: String(r.title || r.name || r.filename || r.file_name || '').trim(), date: r.created_at || r.date || r.created || null,
+                 duration: dur, lang: String(r.language || r.lang || '').toLowerCase(), status: st(r, text), text };
+      }).sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0)).slice(0, 20);
+    }
+    const fmtDur = (sec) => { sec = Math.max(0, Math.round(sec)); const m = Math.floor(sec / 60), s2 = sec % 60; return m + ':' + String(s2).padStart(2, '0'); };
+    function fmtDateTime(x) {
+      const d = new Date(x); if (isNaN(d)) return '';
+      try { return d.toLocaleString({ cs: 'cs-CZ', ru: 'ru-RU' }[currentLang] || 'en-GB', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (_) { return d.toISOString(); }
+    }
+    const fileSlug = (s2) => (String(s2).normalize('NFKD').replace(/[^\w\s.-]+/g, '').trim().replace(/\s+/g, '-').slice(0, 60)) || 'recording';
+    function renderHistory(state) {
+      if (state) histState = state;
+      const box = $('hist-list'); if (!box) return;
+      box.textContent = '';
+      const note = (key) => { const p = document.createElement('p'); p.className = 'hist-note'; p.textContent = t(key); box.appendChild(p); };
+      if (histState === 'loading') { box.setAttribute('aria-busy', 'true'); box.setAttribute('aria-label', t('hist.loading')); for (let i = 0; i < 2; i++) { const d = document.createElement('div'); d.className = 'hist-skel'; box.appendChild(d); } return; }
+      box.removeAttribute('aria-busy'); box.removeAttribute('aria-label');
+      if (histState === 'unavailable' || histState === 'error') return note('hist.' + histState);
+      const items = auth.history || [];
+      if (!items.length) return note('hist.empty');
+      const ul = document.createElement('ul'); ul.className = 'space-y-2.5'; ul.style.listStyle = 'none'; ul.style.padding = '0'; ul.style.margin = '0';
+      items.forEach((r, i) => {
+        const title = r.title || fill(t('hist.untitled'), { n: items.length - i });
+        const li = document.createElement('li'); li.className = 'hist-item'; li.style.setProperty('--i', String(Math.min(i, 8)));
+        const top = document.createElement('div'); top.className = 'flex items-start justify-between gap-3';
+        const h = document.createElement('p'); h.className = 'min-w-0 truncate text-sm font-medium text-white'; h.textContent = title; h.title = title;
+        const chips = document.createElement('span'); chips.className = 'flex flex-none items-center gap-1.5';
+        if (r.lang) { const c = document.createElement('span'); c.className = 'chip'; c.textContent = r.lang.slice(0, 5); chips.appendChild(c); }
+        const sc = document.createElement('span'); sc.className = 'chip' + (r.status === 'done' ? ' ok' : r.status === 'failed' ? ' bad' : ''); sc.textContent = t('hist.status.' + r.status); chips.appendChild(sc);
+        top.append(h, chips);
+        const meta = document.createElement('p'); meta.className = 'mono mt-1 text-xs text-neutral-500';
+        meta.textContent = [fmtDateTime(r.date), r.duration !== null ? fmtDur(r.duration) : ''].filter(Boolean).join(' · ');
+        li.append(top, meta);
+        if (r.text) { const tx = document.createElement('p'); tx.className = 'hist-text'; tx.textContent = r.text; li.appendChild(tx); }
+        const act = document.createElement('div'); act.className = 'hist-actions';
+        const mkBtn = (key, path, fn) => {
+          const b = document.createElement('button'); b.type = 'button'; b.className = 'hbtn'; b.disabled = !r.text; if (!r.text) b.title = t('hist.notext');
+          b.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>';
+          b.appendChild(document.createTextNode(t(key))); b.addEventListener('click', fn); return b;
+        };
+        act.append(
+          mkBtn('hist.copy', '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>', async () => { (await copyText(r.text)) ? toast(t('toast.text')) : toast(t('toast.copyfail'), 'error'); }),
+          mkBtn('hist.txt', '<path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/>', () => { downloadBlob(fileSlug(title) + '.txt', r.text + '\n', 'text/plain'); toast(t('toast.txt')); })
+        );
+        li.appendChild(act); ul.appendChild(li);
+      });
+      box.appendChild(ul);
+    }
+    let histSeq = 0;
+    async function loadHistory() {
+      if (!auth.token || !auth.user) return;
+      const seq = ++histSeq, btn = $('hist-refresh');
+      if (!auth.history) renderHistory('loading');
+      btn.classList.add('spin'); btn.disabled = true;
+      try { const raw = await authed(HISTORY_PATH); if (seq !== histSeq) return; auth.history = normalizeHistory(raw); renderHistory('ok'); }
+      catch (e) { if (seq !== histSeq || (e && e.status === 401)) return; if (!auth.history) auth.history = null; renderHistory(e && [404, 405, 501].includes(e.status) ? 'unavailable' : 'error'); }
+      finally { if (seq === histSeq) { btn.classList.remove('spin'); btn.disabled = false; } }
+    }
+    $('hist-refresh').addEventListener('click', loadHistory);
+
+    /* ---------- default recognition language ---------- */
+    const ASR_KEY = 'veloce-voice-asr-lang';
+    const asrKey = () => ASR_KEY + ':' + ((auth.user && auth.user.email) || '').toLowerCase();
+    function getAsr() { const v = store.get(asrKey()); return ['auto', 'cs', 'en', 'ru'].includes(v) ? v : 'auto'; }
+    $('ac-asr').addEventListener('change', () => { store.set(asrKey(), $('ac-asr').value); toast(t('toast.lang')); });
+
+    /* ---------- GDPR export ---------- */
+    $('ac-gdpr').addEventListener('click', async () => {
+      const btn = $('ac-gdpr'); btn.disabled = true;
+      try {
+        const raw = await authed('/api/me');
+        let history = auth.history;
+        if (!history) { try { history = normalizeHistory(await authed(HISTORY_PATH)); } catch (_) { history = null; } }
+        const data = {
+          service: 'Veloce Voice', exported_at: new Date().toISOString(),
+          profile: raw.user || {},
+          settings: { default_recognition_language: getAsr(), interface_language: currentLang, theme: currentTheme() },
+          support_tickets: raw.tickets || [],
+          recording_history: history
+        };
+        downloadBlob('veloce-voice-data-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(data, null, 2) + '\n', 'application/json');
+        toast(t('toast.gdpr'));
+      } catch (ex) { if (!(ex && ex.status === 401)) toast(errMsg(ex), 'error'); }
+      finally { btn.disabled = false; }
+    });
 
     $('ac-token-eye').addEventListener('click', () => {
       const tok = $('ac-token'), show = tok.type === 'password';
@@ -3228,11 +3531,7 @@
       $('ac-token-eye').setAttribute('aria-label', t(show ? 'acc.hide' : 'acc.show'));
     });
     $('ac-copy').addEventListener('click', async () => {
-      const tok = $('ac-token'), btn = $('ac-copy');
-      let ok = false;
-      try { await navigator.clipboard.writeText(tok.value); ok = true; }
-      catch (_) { const was = tok.type; tok.type = 'text'; tok.select(); try { ok = document.execCommand('copy'); } catch (e) {} tok.type = was; tok.setSelectionRange(0, 0); }
-      if (ok) { btn.textContent = t('acc.copied'); setTimeout(() => { btn.textContent = t('acc.copy'); }, 1600); }
+      (await copyText($('ac-token').value)) ? toast(t('toast.copied')) : toast(t('toast.copyfail'), 'error');
     });
     $('ac-upgrade').addEventListener('click', () => openModal('checkout', { plan: 'plus' }));
 
@@ -3240,12 +3539,12 @@
       e.preventDefault();
       const nick = $('ac-nick').value.trim();
       if (nick.length < 2 || nick.length > 40) { say('ac-nick-msg', t('auth.err.nickname'), true); return; }
-      try { const r = await authed('/api/me/profile', { method: 'PATCH', body: { nickname: nick } }); applyUser(r, () => { auth.user.nickname = nick; }); renderHeader(); renderAccount(); say('ac-nick-msg', t('set.saved')); }
+      try { const r = await authed('/api/me/profile', { method: 'PATCH', body: { nickname: nick } }); applyUser(r, () => { auth.user.nickname = nick; }); renderHeader(); renderAccount(); say('ac-nick-msg', t('toast.saved')); }
       catch (ex) { if (!(ex.status === 401)) say('ac-nick-msg', ex.kind === 'http' && ex.detail ? ex.detail : t(ex.kind === 'network' ? 'auth.err.network' : 'form.error'), true); }
     });
     function applyUser(resp, fallback) { if (resp && resp.user) auth.user = normalizeUser(resp); else fallback(); }
     async function saveAvatar(value) {
-      try { const r = await authed('/api/me/profile', { method: 'PATCH', body: { avatar_url: value || '' } }); applyUser(r, () => { auth.user.avatar = value || null; }); renderHeader(); renderAccount(); say('ac-av-msg', t('set.saved')); }
+      try { const r = await authed('/api/me/profile', { method: 'PATCH', body: { avatar_url: value || '' } }); applyUser(r, () => { auth.user.avatar = value || null; }); renderHeader(); renderAccount(); say('ac-av-msg', t('toast.saved')); }
       catch (ex) { if (!(ex.status === 401)) say('ac-av-msg', ex.kind === 'http' && ex.detail ? ex.detail : t(ex.kind === 'network' ? 'auth.err.network' : 'form.error'), true); }
     }
     $('ac-av-btn').addEventListener('click', () => $('ac-av-file').click());
@@ -3284,7 +3583,7 @@
 
     window.veloceAuthRender = () => {
       renderHeader(); renderThemeUI(); paintAuth();
-      if (auth.user) { renderAccount(); $('ac-token-eye').setAttribute('aria-label', t($('ac-token').type === 'text' ? 'acc.hide' : 'acc.show')); buildDefaultAvatars(); renderAccount(); }
+      if (auth.user) { renderHistory(); renderAccount(); $('ac-token-eye').setAttribute('aria-label', t($('ac-token').type === 'text' ? 'acc.hide' : 'acc.show')); buildDefaultAvatars(); renderAccount(); }
     };
 
     // boot: restore the session. The token never expires on its own (the backend only rotates it on a new login),
