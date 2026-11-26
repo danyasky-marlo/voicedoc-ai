@@ -1638,14 +1638,20 @@
         'auth.expired': 'Your session has expired. Please sign in again.',
         'auth.reset.done': 'Password updated. You can now sign in.',
         'auth.title.reset2': 'Enter the code',
-        'auth.sub.reset2': 'The code was sent to the administrator in Telegram. Enter the 6-digit code you received and choose a new password.',
+        'auth.sub.reset2': 'We sent a 6-digit code to your email. Enter it below and choose a new password.',
         'auth.submit.reset2': 'Set new password',
         'auth.code': 'Confirmation code',
         'auth.code.ph': '6-digit code',
-        'auth.reset.sent': 'Confirmation code sent to the administrator in Telegram. Enter it below.',
+        'auth.reset.sent': 'If an account with this email exists, a confirmation code has been sent. Enter it below.',
         'auth.resend': 'Send a new code',
         'auth.err.code': 'Enter the 6-digit code.',
         'auth.err.badcode': 'Invalid or expired confirmation code.',
+        'auth.title.verify': 'Confirm your email',
+        'auth.sub.verify': 'We sent a 6-digit code to your email. Enter it below to activate your account.',
+        'auth.submit.verify': 'Confirm email',
+        'auth.verify.sent': 'Confirmation code sent. Check your inbox (and the spam folder).',
+        'auth.verify.needed': 'Please confirm your email first. We sent you a new code.',
+        'auth.verify.resent': 'If your account is awaiting confirmation, a new code has been sent.',
         'notif.label': 'Notifications',
         'notif.unread': 'Notifications: {n} new from support',
         'hist.title': 'Recording history',
@@ -1998,14 +2004,20 @@
         'auth.expired': 'Platnost relace vypršela. Přihlaste se prosím znovu.',
         'auth.reset.done': 'Heslo bylo změněno. Nyní se můžete přihlásit.',
         'auth.title.reset2': 'Zadejte kód',
-        'auth.sub.reset2': 'Kód byl odeslán administrátorovi do Telegramu. Zadejte šestimístný kód, který jste obdrželi, a zvolte nové heslo.',
+        'auth.sub.reset2': 'Poslali jsme šestimístný kód na váš e-mail. Zadejte jej níže a zvolte nové heslo.',
         'auth.submit.reset2': 'Nastavit nové heslo',
         'auth.code': 'Potvrzovací kód',
         'auth.code.ph': '6místný kód',
-        'auth.reset.sent': 'Potvrzovací kód byl odeslán administrátorovi do Telegramu. Zadejte jej níže.',
+        'auth.reset.sent': 'Pokud účet s tímto e-mailem existuje, byl odeslán potvrzovací kód. Zadejte jej níže.',
         'auth.resend': 'Odeslat nový kód',
         'auth.err.code': 'Zadejte 6místný kód.',
         'auth.err.badcode': 'Neplatný nebo prošlý potvrzovací kód.',
+        'auth.title.verify': 'Potvrďte svůj e-mail',
+        'auth.sub.verify': 'Poslali jsme šestimístný kód na váš e-mail. Zadejte jej níže a aktivujte účet.',
+        'auth.submit.verify': 'Potvrdit e-mail',
+        'auth.verify.sent': 'Potvrzovací kód byl odeslán. Zkontrolujte doručenou poštu (i složku spam).',
+        'auth.verify.needed': 'Nejprve prosím potvrďte svůj e-mail. Poslali jsme vám nový kód.',
+        'auth.verify.resent': 'Pokud váš účet čeká na potvrzení, byl odeslán nový kód.',
         'notif.label': 'Oznámení',
         'notif.unread': 'Oznámení: {n} nových od podpory',
         'hist.title': 'Historie nahrávek',
@@ -2358,14 +2370,20 @@
         'auth.expired': 'Сессия истекла. Пожалуйста, войдите снова.',
         'auth.reset.done': 'Пароль изменён. Теперь вы можете войти.',
         'auth.title.reset2': 'Введите код',
-        'auth.sub.reset2': 'Код отправлен администратору в Telegram. Введите полученный 6-значный код и задайте новый пароль.',
+        'auth.sub.reset2': 'Мы отправили 6-значный код на вашу почту. Введите его ниже и задайте новый пароль.',
         'auth.submit.reset2': 'Установить новый пароль',
         'auth.code': 'Код подтверждения',
         'auth.code.ph': '6-значный код',
-        'auth.reset.sent': 'Код подтверждения отправлен администратору в Telegram. Введите его ниже.',
+        'auth.reset.sent': 'Если аккаунт с таким email существует, код подтверждения отправлен. Введите его ниже.',
         'auth.resend': 'Отправить код заново',
         'auth.err.code': 'Введите 6-значный код.',
         'auth.err.badcode': 'Неверный или просроченный код подтверждения.',
+        'auth.title.verify': 'Подтвердите email',
+        'auth.sub.verify': 'Мы отправили 6-значный код на вашу почту. Введите его ниже, чтобы активировать аккаунт.',
+        'auth.submit.verify': 'Подтвердить email',
+        'auth.verify.sent': 'Код подтверждения отправлен. Проверьте почту (и папку «Спам»).',
+        'auth.verify.needed': 'Сначала подтвердите email. Мы отправили вам новый код.',
+        'auth.verify.resent': 'Если ваш аккаунт ожидает подтверждения, новый код отправлен.',
         'notif.label': 'Уведомления',
         'notif.unread': 'Уведомления: {n} нов. от поддержки',
         'hist.title': 'История записей',
@@ -3164,7 +3182,7 @@
       else if (ctx === 'register' && err.status === 409) msg = t('auth.err.exists');
       else if (ctx === 'password' && [400, 403].includes(err.status)) msg = t('set.pass.badold');
       else if (ctx === 'reset' && err.status === 404) msg = t('auth.err.notfound');
-      else if (ctx === 'reset2' && err.status === 400) msg = t('auth.err.badcode');
+      else if ((ctx === 'reset2' || ctx === 'verify') && err.status === 400) msg = t('auth.err.badcode');
       else msg = err.detail || t('form.error');
       el.textContent = msg; el.hidden = false;
     }
@@ -3305,19 +3323,19 @@
 
     /* ---------- auth modal ---------- */
     function paintAuth() {
-      const v = auth.view, reset = v === 'reset' || v === 'reset2';
+      const v = auth.view, reset = v === 'reset' || v === 'reset2', verify = v === 'verify';
       $('au-title').textContent = t('auth.title.' + v);
       $('au-sub').textContent = t('auth.sub.' + v);
       $('au-submit').textContent = t('auth.submit.' + v);
-      $('au-tabs').hidden = reset;
+      $('au-tabs').hidden = reset || verify;
       $('au-f-nick').hidden = v !== 'register';
-      $('au-f-code').hidden = v !== 'reset2';
-      $('au-f-pass').hidden = v === 'reset';
-      $('au-email').readOnly = v === 'reset2';
+      $('au-f-code').hidden = !(v === 'reset2' || verify);
+      $('au-f-pass').hidden = v === 'reset' || verify;      // in the verify step the password typed earlier is kept (hidden) and sent with the code
+      $('au-email').readOnly = v === 'reset2' || verify;
       $('au-pass-label').textContent = t(reset ? 'set.pass.new' : 'auth.password');
       $('au-forgot').hidden = v !== 'login';
-      $('au-back').hidden = !reset;
-      $('au-resend').hidden = v !== 'reset2';
+      $('au-back').hidden = !(reset || verify);
+      $('au-resend').hidden = !(v === 'reset2' || verify);
       $('au-pass').setAttribute('autocomplete', v === 'login' ? 'current-password' : 'new-password');
       document.querySelectorAll('[data-au-view]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.auView === v)));
     }
@@ -3330,7 +3348,15 @@
     document.querySelectorAll('[data-au-view]').forEach((b) => b.addEventListener('click', () => setAuthView(b.dataset.auView)));
     $('au-forgot').addEventListener('click', () => { setAuthView('reset'); $('au-email').focus(); });
     $('au-back').addEventListener('click', () => { setAuthView('login'); $('au-code').value = ''; $('au-pass').value = ''; $('au-email').focus(); });
-    $('au-resend').addEventListener('click', () => { setAuthView('reset'); $('au-code').value = ''; $('au-pass').value = ''; $('au-email').focus(); });
+    $('au-resend').addEventListener('click', async () => {
+      if (auth.view === 'verify') {
+        const err = $('au-error'), note = $('au-note'); err.hidden = true; note.hidden = true;
+        try { await api('/api/resend-verification', { method: 'POST', body: { email: $('au-email').value.trim() } }); note.textContent = t('auth.verify.resent'); note.hidden = false; $('au-code').value = ''; $('au-code').focus(); }
+        catch (ex) { showApiError(err, ex, 'verify'); }
+        return;
+      }
+      setAuthView('reset'); $('au-code').value = ''; $('au-pass').value = ''; $('au-email').focus();
+    });
     $('au-code').addEventListener('input', () => { const c = $('au-code'), d = c.value.replace(/\D/g, '').slice(0, 6); if (c.value !== d) c.value = d; });
 
     $('au-form').addEventListener('submit', async (e) => {
@@ -3341,7 +3367,7 @@
       const fail = (key, field) => { err.textContent = t(key); err.hidden = false; $(field).focus(); };
       if (!EMAIL_RE.test(email)) return fail('form.invalid', 'au-email');
       if (v === 'register' && (nick.length < 2 || nick.length > 40)) return fail('auth.err.nickname', 'au-nick');
-      if (v === 'reset2' && !/^\d{6}$/.test($('au-code').value.trim())) return fail('auth.err.code', 'au-code');
+      if ((v === 'reset2' || v === 'verify') && !/^\d{6}$/.test($('au-code').value.trim())) return fail('auth.err.code', 'au-code');
       if ((v === 'register' || v === 'reset2') && pass.length < MIN_PASSWORD) return fail('auth.err.password', 'au-pass');
       if (v === 'login' && !pass) return fail('auth.err.password', 'au-pass');
       btn.disabled = true;
@@ -3355,19 +3381,33 @@
           setAuthView('login'); $('au-email').value = email; $('au-pass').value = ''; $('au-code').value = '';
           note.textContent = t('auth.reset.done'); note.hidden = false; $('au-pass').focus();
         } else {
-          let data = await api(v === 'login' ? '/api/login' : '/api/register', { method: 'POST', body: v === 'login' ? { email, password: pass } : { email, password: pass, nickname: nick } });
+          let data = v === 'verify'
+            ? await api('/api/verify-email', { method: 'POST', body: { email, code: $('au-code').value.trim(), password: pass } })
+            : await api(v === 'login' ? '/api/login' : '/api/register', { method: 'POST', body: v === 'login' ? { email, password: pass } : { email, password: pass, nickname: nick } });
+          if (v === 'register' && data && data.verification_required) {      // e-mail confirmation is switched on: go to the code step
+            setAuthView('verify'); $('au-email').value = email; $('au-code').value = '';
+            note.textContent = t('auth.verify.sent'); note.hidden = false; $('au-code').focus();
+            return;
+          }
           let tok = data && (data.token || data.access_token || data.jwt);
           if (!tok && v === 'register') { data = await api('/api/login', { method: 'POST', body: { email, password: pass } }); tok = data && (data.token || data.access_token || data.jwt); }
           if (!tok) throw new ApiError('http', 500, '');
           saveToken(tok);
           await loadMe();
-          if (v === 'register') { auth.user.theme = currentTheme(); authed('/api/me/profile', { method: 'PATCH', body: { theme: currentTheme() } }).catch(() => {}); }
+          if (v === 'register' || v === 'verify') { auth.user.theme = currentTheme(); authed('/api/me/profile', { method: 'PATCH', body: { theme: currentTheme() } }).catch(() => {}); }
           else if (auth.user.theme && auth.user.theme !== currentTheme()) setTheme(auth.user.theme, { animate: true });
           closeModal();
         }
       } catch (ex) {
+        if (v === 'login' && ex instanceof ApiError && ex.status === 403) {   // correct password, but the e-mail is not confirmed yet
+          setAuthView('verify'); $('au-email').value = email; $('au-code').value = '';
+          note.textContent = t('auth.verify.needed'); note.hidden = false;
+          api('/api/resend-verification', { method: 'POST', body: { email } }).catch(() => {});
+          $('au-code').focus();
+          return;
+        }
         if (!(ex instanceof ApiError && ex.status === 401 && v !== 'login')) showApiError(err, ex, v);
-        if (v === 'reset2' && ex instanceof ApiError && ex.status === 400) $('au-code').focus();
+        if ((v === 'reset2' || v === 'verify') && ex instanceof ApiError && ex.status === 400) $('au-code').focus();
         if (auth.token && !auth.user) saveToken(null);
       } finally { btn.disabled = false; }
     });
