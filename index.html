@@ -1311,9 +1311,25 @@
             <p class="mono mb-1.5 block text-xs text-neutral-500" data-i18n="set.gdpr.title">Privacy and data</p>
             <p class="mb-3 text-xs leading-relaxed text-neutral-500" data-i18n="set.gdpr.hint">A JSON file with your profile, settings and support requests. It contains your API token, so keep it private.</p>
             <button type="button" id="ac-gdpr" class="btn btn-ghost w-full" data-i18n="set.gdpr">Download my data (GDPR)</button>
+            <button type="button" id="ac-privacy" class="btn btn-ghost mt-2.5 w-full" data-open-modal="privacy" data-i18n="set.privacy">Privacy</button>
           </div>
 
           <button type="button" id="ac-logout" class="btn btn-ghost w-full" data-i18n="set.logout">Sign out</button>
+
+          <div class="border-t border-white/10 pt-5">
+            <p class="mono mb-1.5 block text-xs text-neutral-500" data-i18n="set.del.title">Delete account</p>
+            <p class="mb-3 text-xs leading-relaxed text-neutral-500" data-i18n="set.del.hint">Permanently deletes your profile, recording history and support requests. This can’t be undone. Subscription orders are kept for accounting.</p>
+            <button type="button" id="ac-del-open" class="btn btn-ghost w-full" data-i18n="set.del.btn">Delete account</button>
+            <form id="ac-del-form" novalidate class="space-y-3" hidden>
+              <label for="ac-del-pw" class="sr-only" data-i18n="set.del.pw">Enter your password to confirm</label>
+              <input id="ac-del-pw" type="password" autocomplete="current-password" class="field" placeholder="" data-i18n-placeholder="set.del.pw" />
+              <div class="flex gap-2.5">
+                <button type="button" id="ac-del-cancel" class="btn btn-ghost w-full" data-i18n="set.del.cancel">Cancel</button>
+                <button type="submit" id="ac-del-confirm" class="btn w-full disabled:opacity-60" data-i18n="set.del.confirm">Delete permanently</button>
+              </div>
+            </form>
+            <p id="ac-del-msg" class="fmsg" role="status"></p>
+          </div>
         </div>
 
         <!-- Support -->
@@ -1343,11 +1359,23 @@
           </li>
           <li class="flex gap-4">
             <span class="ico shrink-0" style="width:38px;height:38px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
-            <div><h3 class="text-sm font-semibold" data-i18n="priv.2.t">Processed securely, never stored</h3><p class="mt-1 text-sm leading-relaxed text-neutral-400" data-i18n="priv.2.d">Audio and transcripts are used only to produce your result and are not stored after processing.</p></div>
+            <div><h3 class="text-sm font-semibold" data-i18n="priv.2.t">Your recordings aren’t kept</h3><p class="mt-1 text-sm leading-relaxed text-neutral-400" data-i18n="priv.2.d">Audio is processed only to produce your transcript and is not saved on our servers afterwards.</p></div>
           </li>
           <li class="flex gap-4">
             <span class="ico shrink-0" style="width:38px;height:38px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4 9.5 6a14 14 0 0 1-2.6 3.4M6.5 7.6A13.6 13.6 0 0 0 2.5 12c1 2 4.5 6 9.5 6 1.5 0 2.8-.4 4-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></span>
             <div><h3 class="text-sm font-semibold" data-i18n="priv.3.t">Minimal by design</h3><p class="mt-1 text-sm leading-relaxed text-neutral-400" data-i18n="priv.3.d">We handle only what’s needed to fill your document. No ads, and we never sell your data.</p></div>
+          </li>
+          <li class="flex gap-4">
+            <span class="ico shrink-0" style="width:38px;height:38px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span>
+            <div><h3 class="text-sm font-semibold" data-i18n="priv.4.t">What we store</h3><p class="mt-1 text-sm leading-relaxed text-neutral-400" data-i18n="priv.4.d">Your email, nickname, avatar and settings, a hashed password (never the plain one), your monthly usage, your transcript history and the messages you send to support. If you join the beta or preorder a plan, we keep that email and order too.</p></div>
+          </li>
+          <li class="flex gap-4">
+            <span class="ico shrink-0" style="width:38px;height:38px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+            <div><h3 class="text-sm font-semibold" data-i18n="priv.5.t">You stay in control</h3><p class="mt-1 text-sm leading-relaxed text-neutral-400" data-i18n="priv.5.d">In Settings you can download your data as a JSON file (GDPR) or delete your account at any time. Deleting removes your profile, transcript history, support messages and beta sign-up; order records may be kept for accounting.</p></div>
+          </li>
+          <li class="flex gap-4">
+            <span class="ico shrink-0" style="width:38px;height:38px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/></svg></span>
+            <div><h3 class="text-sm font-semibold" data-i18n="priv.6.t">Service providers</h3><p class="mt-1 text-sm leading-relaxed text-neutral-400" data-i18n="priv.6.d">We use a hosting provider and an email-delivery service to run Veloce Voice, and new sign-ups and support messages are forwarded to our team’s notification channel. We share only what these services need to work.</p></div>
           </li>
         </ul>
         <div class="mt-7 border-t border-white/10 pt-5 text-xs leading-relaxed text-neutral-500">
@@ -1688,6 +1716,15 @@
         'set.pass.err': 'Enter your current password and a new one (at least 6 characters).',
         'set.pass.badold': 'Current password is incorrect.',
         'set.logout': 'Sign out',
+        'set.privacy': 'Privacy',
+        'set.del.title': 'Delete account',
+        'set.del.hint': 'Permanently deletes your profile, recording history and support requests. This can’t be undone. Subscription orders are kept for accounting.',
+        'set.del.btn': 'Delete account',
+        'set.del.pw': 'Enter your password to confirm',
+        'set.del.cancel': 'Cancel',
+        'set.del.confirm': 'Delete permanently',
+        'set.del.badpw': 'Incorrect password.',
+        'set.del.done': 'Your account has been deleted.',
         'sup.title': 'Your requests',
         'sup.empty': 'No requests yet.',
         'sup.new': 'New request',
@@ -1730,10 +1767,16 @@
         'priv.lead': 'Veloce Voice respects your privacy. Here’s how your voice and data are handled.',
         'priv.1.t': 'Encrypted audio streams',
         'priv.1.d': 'Your voice is sent over encrypted connections, so it can’t be intercepted on the way.',
-        'priv.2.t': 'Processed securely, never stored',
-        'priv.2.d': 'Audio and transcripts are used only to produce your result and are not stored after processing.',
+        'priv.2.t': 'Your recordings aren’t kept',
+        'priv.2.d': 'Audio is processed only to produce your transcript and is not saved on our servers afterwards.',
         'priv.3.t': 'Minimal by design',
         'priv.3.d': 'We handle only what’s needed to fill your document. No ads, and we never sell your data.',
+        'priv.4.t': 'What we store',
+        'priv.4.d': 'Your email, nickname, avatar and settings, a hashed password (never the plain one), your monthly usage, your transcript history and the messages you send to support. If you join the beta or preorder a plan, we keep that email and order too.',
+        'priv.5.t': 'You stay in control',
+        'priv.5.d': 'In Settings you can download your data as a JSON file (GDPR) or delete your account at any time. Deleting removes your profile, transcript history, support messages and beta sign-up; order records may be kept for accounting.',
+        'priv.6.t': 'Service providers',
+        'priv.6.d': 'We use a hosting provider and an email-delivery service to run Veloce Voice, and new sign-ups and support messages are forwarded to our team’s notification channel. We share only what these services need to work.',
         'priv.note': 'This is a short summary for the v0.1 beta; a full policy will be published before public release.',
         'priv.q': 'Questions about privacy?',
         'priv.link': 'Contact us',
@@ -2033,6 +2076,15 @@
         'set.pass.err': 'Zadejte současné heslo a nové heslo (alespoň 6 znaků).',
         'set.pass.badold': 'Současné heslo není správné.',
         'set.logout': 'Odhlásit se',
+        'set.privacy': 'Soukromí',
+        'set.del.title': 'Smazat účet',
+        'set.del.hint': 'Trvale smaže váš profil, historii nahrávek a žádosti o podporu. Tuto akci nelze vrátit zpět. Objednávky předplatného se uchovávají pro účetní účely.',
+        'set.del.btn': 'Smazat účet',
+        'set.del.pw': 'Pro potvrzení zadejte své heslo',
+        'set.del.cancel': 'Zrušit',
+        'set.del.confirm': 'Smazat natrvalo',
+        'set.del.badpw': 'Nesprávné heslo.',
+        'set.del.done': 'Váš účet byl smazán.',
         'sup.title': 'Vaše žádosti',
         'sup.empty': 'Zatím žádné žádosti.',
         'sup.new': 'Nová žádost',
@@ -2075,10 +2127,16 @@
         'priv.lead': 'Veloce Voice respektuje vaše soukromí. Takto zacházíme s vaším hlasem a daty.',
         'priv.1.t': 'Šifrované audio streamy',
         'priv.1.d': 'Váš hlas se přenáší šifrovaným spojením, takže ho nelze cestou zachytit.',
-        'priv.2.t': 'Zpracováno bezpečně, nikdy neukládáno',
-        'priv.2.d': 'Audio a přepisy slouží jen k vytvoření výsledku a po zpracování se neukládají.',
+        'priv.2.t': 'Vaše nahrávky se neukládají',
+        'priv.2.d': 'Zvuk se zpracovává jen kvůli vytvoření přepisu a poté se na našich serverech neukládá.',
         'priv.3.t': 'Minimum dat už z principu',
         'priv.3.d': 'Zpracováváme jen to, co je nutné k vyplnění vašeho dokumentu. Žádné reklamy a vaše data nikdy neprodáváme.',
+        'priv.4.t': 'Co ukládáme',
+        'priv.4.d': 'Váš e-mail, přezdívku, avatar a nastavení, hash hesla (nikdy ne samotné heslo), měsíční spotřebu, historii přepisů a zprávy, které pošlete podpoře. Pokud se přihlásíte do bety nebo si předobjednáte tarif, uchováváme i tento e-mail a objednávku.',
+        'priv.5.t': 'Máte vše pod kontrolou',
+        'priv.5.d': 'V Nastavení si můžete kdykoli stáhnout svá data jako soubor JSON (GDPR) nebo smazat účet. Smazáním se odstraní profil, historie přepisů, zprávy podpoře a registrace do bety; záznamy o objednávkách mohou zůstat kvůli účetnictví.',
+        'priv.6.t': 'Poskytovatelé služeb',
+        'priv.6.d': 'K provozu Veloce Voice využíváme hostingovou službu a službu pro doručování e-mailů a nové registrace i zprávy podpoře se předávají do notifikačního kanálu našeho týmu. Sdílíme jen to, co tyto služby potřebují k fungování.',
         'priv.note': 'Jde o stručné shrnutí pro betaverzi v0.1; plné znění zásad zveřejníme před veřejným vydáním.',
         'priv.q': 'Máte dotazy k soukromí?',
         'priv.link': 'Napište nám',
@@ -2378,6 +2436,15 @@
         'set.pass.err': 'Введите текущий пароль и новый (не менее 6 символов).',
         'set.pass.badold': 'Текущий пароль указан неверно.',
         'set.logout': 'Выйти',
+        'set.privacy': 'Конфиденциальность',
+        'set.del.title': 'Удалить аккаунт',
+        'set.del.hint': 'Безвозвратно удалит ваш профиль, историю записей и обращения в поддержку. Это действие нельзя отменить. Заказы подписки сохраняются для бухгалтерского учёта.',
+        'set.del.btn': 'Удалить аккаунт',
+        'set.del.pw': 'Введите пароль для подтверждения',
+        'set.del.cancel': 'Отмена',
+        'set.del.confirm': 'Удалить навсегда',
+        'set.del.badpw': 'Неверный пароль.',
+        'set.del.done': 'Ваш аккаунт удалён.',
         'sup.title': 'Ваши обращения',
         'sup.empty': 'Обращений пока нет.',
         'sup.new': 'Новое обращение',
@@ -2420,10 +2487,16 @@
         'priv.lead': 'Veloce Voice уважает вашу конфиденциальность. Вот как мы обращаемся с вашим голосом и данными.',
         'priv.1.t': 'Зашифрованные аудиопотоки',
         'priv.1.d': 'Ваш голос передаётся по зашифрованным соединениям, поэтому его нельзя перехватить по пути.',
-        'priv.2.t': 'Безопасная обработка без хранения',
-        'priv.2.d': 'Аудио и расшифровки используются только для получения результата и не сохраняются после обработки.',
+        'priv.2.t': 'Ваши записи не хранятся',
+        'priv.2.d': 'Аудио обрабатывается только для получения расшифровки и после этого не сохраняется на наших серверах.',
         'priv.3.t': 'Минимум данных по умолчанию',
         'priv.3.d': 'Мы обрабатываем только то, что нужно для заполнения документа. Никакой рекламы, и мы никогда не продаём ваши данные.',
+        'priv.4.t': 'Что мы храним',
+        'priv.4.d': 'Ваш email, никнейм, аватар и настройки, хэш пароля (но не сам пароль), ежемесячное использование, историю расшифровок и сообщения, которые вы отправляете в поддержку. Если вы записались в бету или оформили предзаказ, мы также храним этот email и заказ.',
+        'priv.5.t': 'Вы контролируете свои данные',
+        'priv.5.d': 'В настройках можно в любой момент скачать свои данные в виде JSON-файла (GDPR) или удалить аккаунт. При удалении исчезают профиль, история расшифровок, сообщения в поддержку и заявка на бету; записи о заказах могут сохраняться для бухгалтерского учёта.',
+        'priv.6.t': 'Сервис-провайдеры',
+        'priv.6.d': 'Для работы Veloce Voice мы используем хостинг и сервис отправки писем, а новые регистрации и сообщения в поддержку пересылаются в рабочий канал уведомлений нашей команды. Мы передаём только то, что нужно этим сервисам для работы.',
         'priv.note': 'Это краткая сводка для бета-версии v0.1; полная политика будет опубликована до публичного релиза.',
         'priv.q': 'Вопросы о конфиденциальности?',
         'priv.link': 'Напишите нам',
@@ -2876,7 +2949,7 @@
         if (betaUrl) {
           const res = await fetch(betaUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-Lang': currentLang },
             body: JSON.stringify({ email, platform: currentPlatform })
           });
           if (!res.ok) throw new Error('bad status');
@@ -2906,7 +2979,7 @@
         if (contactUrl) {
           const res = await fetch(contactUrl, {
             method: 'POST',
-            headers: Object.assign({ 'Content-Type': 'application/json', 'Accept': 'application/json' }, authHeader()),
+            headers: Object.assign({ 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-Lang': currentLang }, authHeader()),
             body: JSON.stringify({ name, email, message: msg })
           });
           if (!res.ok) throw new Error('bad status');
@@ -2987,7 +3060,7 @@
         if (checkoutUrl) {
           const res = await fetch(checkoutUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-Lang': currentLang },
             body: JSON.stringify({ email, plan: co.plan, cycle: co.cycle, due: q.due / 100 })
           });
           if (!res.ok) throw new Error('bad status');
@@ -3069,7 +3142,7 @@
       try {
         res = await fetch(API_BASE + path, {
           method: opts.method || 'GET',
-          headers: Object.assign({ 'Accept': 'application/json' }, opts.body ? { 'Content-Type': 'application/json' } : {}, opts.token ? { 'Authorization': 'Bearer ' + opts.token } : {}),
+          headers: Object.assign({ 'Accept': 'application/json', 'X-Lang': currentLang }, opts.body ? { 'Content-Type': 'application/json' } : {}, opts.token ? { 'Authorization': 'Bearer ' + opts.token } : {}),
           body: opts.body ? JSON.stringify(opts.body) : undefined
         });
       } catch (_) { throw new ApiError('network'); }
@@ -3376,7 +3449,7 @@
       if (!auth.user) return;
       $('ac-nick').value = auth.user.nickname;
       ['ac-nick-msg', 'ac-av-msg', 'ac-pw-msg', 'sup-status'].forEach((id) => { $(id).textContent = ''; });
-      $('ac-pw-form').reset();
+      $('ac-pw-form').reset(); resetDelete();
       const tok = $('ac-token'); tok.type = 'password';
       $('ac-token-eye').setAttribute('aria-label', t('acc.show'));
       buildDefaultAvatars(); renderAccount(); renderThemeUI();
@@ -3569,6 +3642,26 @@
       }
     });
     $('ac-logout').addEventListener('click', logout);
+
+    // Delete account: asks for the password, then POST /api/me/delete
+    function resetDelete() {
+      $('ac-del-form').reset(); $('ac-del-form').hidden = true; $('ac-del-open').hidden = false; $('ac-del-msg').textContent = '';
+    }
+    $('ac-del-open').addEventListener('click', () => { $('ac-del-open').hidden = true; $('ac-del-form').hidden = false; $('ac-del-pw').focus(); });
+    $('ac-del-cancel').addEventListener('click', resetDelete);
+    $('ac-del-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pw = $('ac-del-pw').value, btn = $('ac-del-confirm');
+      if (!pw) { say('ac-del-msg', t('set.del.pw'), true); $('ac-del-pw').focus(); return; }
+      btn.disabled = true;
+      try {
+        await authed('/api/me/delete', { method: 'POST', body: { password: pw } });
+        resetDelete(); clearSession(); closeModal(); toast(t('set.del.done'));
+      } catch (ex) {
+        if (ex.status === 401) return;                       // session expired: handled by authed()
+        say('ac-del-msg', ex.kind === 'http' && ex.status === 400 ? t('set.del.badpw') : errMsg(ex), true);
+      } finally { btn.disabled = false; }
+    });
 
     $('sup-form').addEventListener('submit', async (e) => {
       e.preventDefault();
